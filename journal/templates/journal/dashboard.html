@@ -1,0 +1,117 @@
+{% extends 'journal/base.html' %}
+{% load static journal_extras %}
+
+{% block title %}Dashboard | MyRecord{% endblock %}
+
+{% block content %}
+<div class="header-row">
+    <div>
+        <h1 class="page-title">Monthly Overview</h1>
+        <p style="color: var(--text-dim);">{{ today|date:"F Y" }}</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="?month={{ current_month|add:'-1' }}&year={{ current_year }}" class="btn" style="background: #222; color: #fff;"><i class="fas fa-chevron-left"></i></a>
+        <a href="?month={{ current_month|add:'1' }}&year={{ current_year }}" class="btn" style="background: #222; color: #fff;"><i class="fas fa-chevron-right"></i></a>
+        <a href="{% url 'entry_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            <span>Add Entry</span>
+        </a>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="card">
+        <div class="stat-label">Total Entries</div>
+        <div class="stat-value">{{ total_entries }}</div>
+        <div style="color: var(--primary-color); font-size: 0.9rem;">
+            <i class="fas fa-chart-line"></i> Lifetime Activity
+        </div>
+    </div>
+    <div class="card" style="grid-column: span 2;">
+        <div class="stat-label">Mood Distribution</div>
+        <div style="height: 120px;">
+            <canvas id="moodChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Section -->
+<div class="calendar-section">
+    <div class="calendar-grid">
+        <div class="calendar-day-head">SUN</div>
+        <div class="calendar-day-head">MON</div>
+        <div class="calendar-day-head">TUE</div>
+        <div class="calendar-day-head">WED</div>
+        <div class="calendar-day-head">THU</div>
+        <div class="calendar-day-head">FRI</div>
+        <div class="calendar-day-head">SAT</div>
+
+        {% for week in month_days %}
+            {% for day in week %}
+                {% with entry=entries_by_date|get_item:day %}
+                <div class="calendar-day {% if day.month != current_month %}other-month{% endif %} {% if day == today %}today{% endif %}">
+                    <span class="day-number">{{ day.day }}</span>
+                    {% if entry %}
+                        <a href="{% url 'entry_detail' entry.pk %}" style="text-decoration: none;">
+                            <div class="day-mood">
+                                {% if entry.mood == 'happy' %}😊
+                                {% elif entry.mood == 'sad' %}😢
+                                {% elif entry.mood == 'neutral' %}😐
+                                {% elif entry.mood == 'productive' %}🔥
+                                {% elif entry.mood == 'tired' %}😫
+                                {% elif entry.mood == 'excited' %}🤩
+                                {% elif entry.mood == 'angry' %}😡
+                                {% endif %}
+                            </div>
+                            <div class="day-entry-indicator"></div>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'entry_create' %}?date={{ day|date:'Y-m-d' }}" style="display: block; width: 100%; height: 100%;"></a>
+                    {% endif %}
+                </div>
+                {% endwith %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const ctx = document.getElementById('moodChart').getContext('2d');
+    const moodLabels = {{ mood_labels_json|safe }};
+    const moodCounts = {{ mood_counts_json|safe }};
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: moodLabels,
+            datasets: [{
+                label: 'Days',
+                data: moodCounts,
+                backgroundColor: '#ff6b00',
+                borderRadius: 8,
+                barThickness: 30,
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#333' },
+                    ticks: { color: '#a0a0a0' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#a0a0a0' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
