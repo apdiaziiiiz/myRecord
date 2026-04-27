@@ -183,7 +183,7 @@ body {
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 10px;
 }
 
@@ -203,6 +203,8 @@ body {
     padding: 10px;
     position: relative;
     transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .calendar-day.other-month {
@@ -244,43 +246,134 @@ body {
 
 /* Form Styles */
 .form-card {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
 }
 
 .form-label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--text-dim);
+    margin-bottom: 1rem;
+    font-weight: 800;
+    color: #fff;
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+    position: relative;
+    padding-left: 1rem;
+}
+
+.form-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 1.2rem;
+    background-color: var(--primary-color);
+    border-radius: 2px;
 }
 
 .form-control {
     width: 100%;
     background-color: #111;
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1rem;
+    border-radius: 16px;
+    padding: 1.2rem;
     color: #fff;
-    font-size: 1rem;
-    transition: border-color 0.3s;
+    font-size: 1.1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .form-control:focus {
     outline: none;
     border-color: var(--primary-color);
+    background-color: #161616;
+    box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
 }
 
-.mood-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1em;
+/* Journal Textarea Specific */
+.journal-textarea {
+    min-height: 400px;
+    min-width: 350px;
+    resize: both;
+    line-height: 1.8;
+}
+
+/* Mood Selector Redesign */
+.mood-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 1rem;
+}
+
+.mood-option {
+    position: relative;
+}
+
+.mood-option input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.mood-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background-color: #111;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mood-box:hover {
+    background-color: #1a1a1a;
+    transform: translateY(-5px);
+}
+
+.mood-option input:checked + .mood-box {
+    border-color: var(--primary-color);
+    background-color: rgba(255, 107, 0, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.mood-emoji {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.mood-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-dim);
+}
+
+.mood-option input:checked + .mood-box .mood-label {
+    color: var(--primary-color);
+}
+
+/* Custom File Input Decor */
+.file-upload-card {
+    background: #111;
+    border: 2px dashed var(--border-color);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.file-upload-card:hover {
+    border-color: var(--primary-color);
+    background: #161616;
 }
 
 /* Responsive */

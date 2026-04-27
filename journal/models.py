@@ -30,7 +30,7 @@ class JournalEntry(models.Model):
 
 class JournalImage(models.Model):
     entry = models.ForeignKey(JournalEntry, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='images/%Y/%m/%d/')
+    image = models.FileField(upload_to='images/%Y/%m/%d/')
 
     def __str__(self):
         return f"Image for {self.entry.date}"

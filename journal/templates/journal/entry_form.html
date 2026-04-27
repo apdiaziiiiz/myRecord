@@ -16,30 +16,57 @@
         {% csrf_token %}
         
         <div class="form-group">
-            <label class="form-label">How are you feeling?</label>
-            {{ form.mood }}
+            <label class="form-label">How are you feeling today?</label>
+            <div class="mood-grid">
+                {% for value, label in form.fields.mood.choices %}
+                <label class="mood-option">
+                    <input type="radio" name="mood" value="{{ value }}" {% if form.mood.value == value %}checked{% endif %} required>
+                    <div class="mood-box">
+                        <span class="mood-emoji">
+                            {% if value == 'happy' %}😊
+                            {% elif value == 'sad' %}😢
+                            {% elif value == 'neutral' %}😐
+                            {% elif value == 'productive' %}🔥
+                            {% elif value == 'tired' %}😫
+                            {% elif value == 'excited' %}🤩
+                            {% elif value == 'angry' %}😡
+                            {% endif %}
+                        </span>
+                        <span class="mood-label">{{ label }}</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
         </div>
 
         <div class="form-group">
-            <label class="form-label">Write your thoughts</label>
-            {{ form.content }}
+            <label class="form-label">Capture your thoughts</label>
+            <textarea name="content" class="form-control journal-textarea" placeholder="Start writing your story..." required>{{ form.content.value|default_if_none:"" }}</textarea>
         </div>
 
-        <div class="stats-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="stats-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
             <div class="form-group">
-                <label class="form-label"><i class="fas fa-image"></i> Photos</label>
-                <input type="file" name="images" multiple class="form-control" accept="image/*">
-                <small style="color: var(--text-dim);">You can select multiple images</small>
+                <label class="form-label"><i class="fas fa-image"></i> Photos & Moments</label>
+                <div class="file-upload-card">
+                    <input type="file" name="images" multiple class="form-control" accept="image/*" style="border: none; background: transparent;">
+                    <p style="color: var(--text-dim); margin-top: 1rem;">Click or drag to upload multiple images</p>
+                </div>
             </div>
             <div class="form-group">
-                <label class="form-label"><i class="fas fa-microphone"></i> Audio</label>
-                {{ form.audio }}
+                <label class="form-label"><i class="fas fa-microphone"></i> Voice Note</label>
+                <div class="file-upload-card">
+                    <input type="file" name="audio" class="form-control" accept="audio/*" style="border: none; background: transparent;">
+                    <p style="color: var(--text-dim); margin-top: 1rem;">Upload an audio recording</p>
+                </div>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="form-label"><i class="fas fa-video"></i> Video</label>
-            {{ form.video }}
+            <label class="form-label"><i class="fas fa-video"></i> Video Memory</label>
+            <div class="file-upload-card">
+                <input type="file" name="video" class="form-control" accept="video/*" style="border: none; background: transparent;">
+                <p style="color: var(--text-dim); margin-top: 1rem;">Share a video clip of your day</p>
+            </div>
         </div>
 
         <div style="display: flex; gap: 1rem; margin-top: 2rem;">

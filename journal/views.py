@@ -18,8 +18,29 @@ class DashboardView(ListView):
         today = timezone.now().date()
         
         # Monthly filtering logic (default to current month)
-        year = self.request.GET.get('year', today.year)
-        month = self.request.GET.get('month', today.month)
+        year = int(self.request.GET.get('year', today.year))
+        month = int(self.request.GET.get('month', today.month))
+        
+        # Handle month wrap-around
+        if month > 12:
+            month = 1
+            year += 1
+        elif month < 1:
+            month = 12
+            year -= 1
+            
+        # Calculate navigation links
+        prev_month = month - 1
+        prev_year = year
+        if prev_month < 1:
+            prev_month = 12
+            prev_year -= 1
+            
+        next_month = month + 1
+        next_year = year
+        if next_month > 12:
+            next_month = 1
+            next_year += 1
         
         # Analytics: Mood distribution
         mood_data = JournalEntry.objects.values('mood').annotate(count=Count('mood'))
@@ -29,10 +50,11 @@ class DashboardView(ListView):
         # Analytics: Entry frequency (days with entries)
         total_entries = JournalEntry.objects.count()
         
-        # Calendar logic
+        # Calendar logic: Only current month days
         import calendar
         cal = calendar.Calendar(firstweekday=6)
-        month_days = cal.monthdatescalendar(int(year), int(month))
+        # Get all days in the weeks that contain the month, then filter for current month
+        all_days = [day for week in cal.monthdatescalendar(year, month) for day in week if day.month == month]
         
         # Map entries to dates for the calendar
         entries_by_date = {entry.date: entry for entry in JournalEntry.objects.all()}
@@ -41,11 +63,16 @@ class DashboardView(ListView):
             'mood_labels_json': json.dumps(mood_labels),
             'mood_counts_json': json.dumps(mood_counts),
             'total_entries': total_entries,
-            'month_days': month_days,
+            'month_days': all_days,
             'entries_by_date': entries_by_date,
-            'current_year': int(year),
-            'current_month': int(month),
+            'current_year': year,
+            'current_month': month,
+            'prev_month': prev_month,
+            'prev_year': prev_year,
+            'next_month': next_month,
+            'next_year': next_year,
             'today': today,
+            'view_date': datetime.date(year, month, 1),
         })
         return context
 
