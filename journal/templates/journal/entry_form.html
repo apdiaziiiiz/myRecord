@@ -44,30 +44,21 @@
             <textarea name="content" class="form-control journal-textarea" placeholder="Start writing your story..." required>{{ form.content.value|default_if_none:"" }}</textarea>
         </div>
 
-        <div class="stats-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-            <div class="form-group">
-                <label class="form-label"><i class="fas fa-image"></i> Photos & Moments</label>
-                <div class="file-upload-card">
-                    <input type="file" name="images" multiple class="form-control" accept="image/*" style="border: none; background: transparent;">
-                    <p style="color: var(--text-dim); margin-top: 1rem;">Click or drag to upload multiple images</p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label"><i class="fas fa-microphone"></i> Voice Note</label>
-                <div class="file-upload-card">
-                    <input type="file" name="audio" class="form-control" accept="audio/*" style="border: none; background: transparent;">
-                    <p style="color: var(--text-dim); margin-top: 1rem;">Upload an audio recording</p>
-                </div>
-            </div>
+        <div class="media-pill-row">
+            <label class="media-pill" for="input-voice">
+                <i class="fas fa-microphone"></i> Voice Note
+                <input id="input-voice" type="file" name="audio" accept="audio/*" hidden>
+            </label>
+            <label class="media-pill" for="input-photo">
+                <i class="fas fa-camera"></i> Photo
+                <input id="input-photo" type="file" name="images" multiple accept="image/*" hidden>
+            </label>
+            <label class="media-pill" for="input-video">
+                <i class="fas fa-video"></i> Video
+                <input id="input-video" type="file" name="video" accept="video/*" hidden>
+            </label>
         </div>
-
-        <div class="form-group">
-            <label class="form-label"><i class="fas fa-video"></i> Video Memory</label>
-            <div class="file-upload-card">
-                <input type="file" name="video" class="form-control" accept="video/*" style="border: none; background: transparent;">
-                <p style="color: var(--text-dim); margin-top: 1rem;">Share a video clip of your day</p>
-            </div>
-        </div>
+        <div id="media-file-names" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.4rem; min-height:1.2rem;"></div>
 
         <div style="display: flex; gap: 1rem; margin-top: 2rem;">
             <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">
@@ -81,10 +72,42 @@
 
 {% block extra_js %}
 <script>
-    // Custom styling for file inputs to match the theme
-    document.querySelectorAll('input[type="file"]').forEach(input => {
-        input.classList.add('form-control');
+    // Handle file selection display
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    const fileNameDisplay = document.getElementById('media-file-names');
+    
+    const selectedFiles = {
+        audio: null,
+        images: [],
+        video: null
+    };
+
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            updateFileDisplay();
+        });
     });
+
+    function updateFileDisplay() {
+        fileNameDisplay.innerHTML = '';
+        
+        fileInputs.forEach(input => {
+            if (input.files.length > 0) {
+                Array.from(input.files).forEach(file => {
+                    const tag = document.createElement('div');
+                    tag.className = 'file-name-tag';
+                    
+                    let icon = 'fa-file';
+                    if (input.name === 'audio') icon = 'fa-microphone';
+                    if (input.name === 'images') icon = 'fa-image';
+                    if (input.name === 'video') icon = 'fa-video';
+                    
+                    tag.innerHTML = `<i class="fas ${icon}"></i> ${file.name}`;
+                    fileNameDisplay.appendChild(tag);
+                });
+            }
+        });
+    }
     
     // Auto-expand textarea
     const textarea = document.querySelector('textarea');
@@ -93,6 +116,9 @@
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
         });
+        // Trigger once for existing content
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
     }
 </script>
 {% endblock %}
