@@ -248,10 +248,13 @@ body {
 .form-card {
     max-width: 1000px;
     margin: 0 auto;
+
 }
 
 .form-group {
     margin-bottom: 2.5rem;
+    padding-left: 40px;
+    margin-right: 0px;
 }
 
 .form-label {
@@ -298,7 +301,8 @@ body {
 /* Journal Textarea Specific */
 .journal-textarea {
     min-height: 400px;
-    min-width: 350px;
+    min-width: 400px;
+    width: 840px;
     resize: both;
     line-height: 1.8;
 }
@@ -307,7 +311,7 @@ body {
 .mood-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 1rem;
+    gap: 25px;
 }
 
 .mood-option {
@@ -327,12 +331,14 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem;
+    padding: 10px;
     background-color: #111;
     border: 2px solid transparent;
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
+    width: 114px;
+    height: 130px;
 }
 
 .mood-box:hover {
@@ -364,9 +370,10 @@ body {
 /* Media Pill Row */
 .media-pill-row {
     display: flex;
+    justify-content: center;
     gap: 0.75rem;
     flex-wrap: wrap;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .media-pill {

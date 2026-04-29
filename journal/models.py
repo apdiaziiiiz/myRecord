@@ -3,13 +3,13 @@ from django.utils import timezone
 
 class JournalEntry(models.Model):
     MOOD_CHOICES = [
-        ('happy', '😊 Happy'),
-        ('sad', '😢 Sad'),
-        ('neutral', '😐 Neutral'),
-        ('productive', '🔥 Productive'),
-        ('tired', '😫 Tired'),
-        ('excited', '🤩 Excited'),
-        ('angry', '😡 Angry'),
+        ('happy', 'Happy'),
+        ('sad', 'Sad'),
+        ('neutral', 'Neutral'),
+        ('productive', 'Productive'),
+        ('tired', 'Tired'),
+        ('excited', 'Excited'),
+        ('angry', 'Angry'),
     ]
 
     content = models.TextField()
