@@ -6,14 +6,23 @@
 {% block content %}
 <div class="header-row">
     <div>
-        <h1 class="page-title">{% if object %}Edit Entry{% else %}Write Today's Story{% endif %}</h1>
-        <p style="color: var(--text-dim);">{% if object %}{{ object.date|date:"F d, Y" }}{% else %}{{ today|date:"F d, Y" }}{% endif %}</p>
+        <h1 class="page-title">{% if object %}Edit Entry{% else %}Write Your Story{% endif %}</h1>
+        <p style="color: var(--text-dim);">
+            {% if object %}
+                {{ object.date|date:"F d, Y" }}
+            {% elif form.date.value %}
+                {{ form.date.value|date:"F d, Y" }}
+            {% else %}
+                {{ today|date:"F d, Y" }}
+            {% endif %}
+        </p>
     </div>
 </div>
 
 <div class="form-card">
     <form method="post" enctype="multipart/form-data" class="card">
         {% csrf_token %}
+        <input type="hidden" name="date" value="{{ form.date.value|default_if_none:'' }}">
         
         <div class="form-group">
             <label class="form-label">How are you feeling today?</label>

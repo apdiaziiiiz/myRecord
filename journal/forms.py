@@ -22,7 +22,7 @@ class JournalEntryForm(forms.ModelForm):
 
     class Meta:
         model = JournalEntry
-        fields = ['mood', 'content', 'audio', 'video']
+        fields = ['date', 'mood', 'content', 'audio', 'video']
         widgets = {
             'content': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Write your thoughts here...'}),
             'mood': forms.Select(attrs={'class': 'mood-select'}),

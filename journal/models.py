@@ -14,7 +14,7 @@ class JournalEntry(models.Model):
 
     content = models.TextField()
     mood = models.CharField(max_length=20, choices=MOOD_CHOICES, default='neutral')
-    date = models.DateField(default=timezone.now)
+    date = models.DateField(default=timezone.now, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     # Media fields (Optional)

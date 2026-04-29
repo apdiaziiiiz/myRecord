@@ -52,7 +52,7 @@
                     <span class="day-weekday" style="font-size: 0.6rem; color: var(--primary-color); font-weight: 800; opacity: 0.7;">{{ day|date:"D"|slice:":1" }}</span>
                 </div>
                 {% if entry %}
-                    <a href="{% url 'entry_detail' entry.pk %}" style="text-decoration: none;">
+                    <a href="{% url 'entry_update' entry.pk %}" style="text-decoration: none;">
                         <div class="day-mood" style="font-size: 1.2rem;">
                             {% if entry.mood == 'happy' %}😊
                             {% elif entry.mood == 'sad' %}😢

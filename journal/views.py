@@ -82,6 +82,33 @@ class EntryCreateView(CreateView):
     template_name = 'journal/entry_form.html'
     success_url = reverse_lazy('dashboard')
 
+    def dispatch(self, request, *args, **kwargs):
+        date_str = request.GET.get('date')
+        if date_str:
+            try:
+                date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+                existing_entry = JournalEntry.objects.filter(date=date_obj).first()
+                if existing_entry:
+                    return redirect('entry_update', pk=existing_entry.pk)
+            except ValueError:
+                pass
+        else:
+            # Check for today if no date is specified
+            today = timezone.now().date()
+            existing_entry = JournalEntry.objects.filter(date=today).first()
+            if existing_entry:
+                return redirect('entry_update', pk=existing_entry.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        date_str = self.request.GET.get('date')
+        if date_str:
+            initial['date'] = date_str
+        else:
+            initial['date'] = timezone.now().date()
+        return initial
+
     def form_valid(self, form):
         response = super().form_valid(form)
         images = self.request.FILES.getlist('images')
