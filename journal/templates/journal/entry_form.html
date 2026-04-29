@@ -50,7 +50,10 @@
 
         <div class="form-group">
             <label class="form-label">Capture your thoughts</label>
-            <textarea name="content" class="form-control journal-textarea" placeholder="Start writing your story..." required>{{ form.content.value|default_if_none:"" }}</textarea>
+            <div id="editor-container">
+                {{ form.content.value|safe|default_if_none:"" }}
+            </div>
+            <textarea name="content" id="hidden-content" style="display:none;"></textarea>
         </div>
 
         <div class="media-pill-row">
@@ -81,16 +84,33 @@
 
 {% block extra_js %}
 <script>
+    // Initialize Quill
+    const quill = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet'}, { 'list': 'check' }],
+                ['clean']
+            ]
+        },
+        placeholder: 'Start writing your story...'
+    });
+
+    // Handle form submission
+    const form = document.querySelector('form');
+    form.onsubmit = function() {
+        const content = document.querySelector('#hidden-content');
+        content.value = quill.root.innerHTML;
+    };
+
     // Handle file selection display
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const fileNameDisplay = document.getElementById('media-file-names');
     
-    const selectedFiles = {
-        audio: null,
-        images: [],
-        video: null
-    };
-
     fileInputs.forEach(input => {
         input.addEventListener('change', function() {
             updateFileDisplay();
@@ -99,7 +119,6 @@
 
     function updateFileDisplay() {
         fileNameDisplay.innerHTML = '';
-        
         fileInputs.forEach(input => {
             if (input.files.length > 0) {
                 Array.from(input.files).forEach(file => {
@@ -117,17 +136,39 @@
             }
         });
     }
-    
-    // Auto-expand textarea
-    const textarea = document.querySelector('textarea');
-    if (textarea) {
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-        // Trigger once for existing content
-        textarea.style.height = 'auto';
-        textarea.style.height = (textarea.scrollHeight) + 'px';
-    }
 </script>
+<style>
+    /* Quill Custom Styling to match dark theme */
+    #editor-container {
+        width: 100%;
+        max-width: 840px;
+        background: #111;
+        margin-bottom: 1rem;
+    }
+    .ql-toolbar.ql-snow {
+        border: 1px solid #333;
+        background: #1a1a1a;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .ql-container.ql-snow {
+        border: 1px solid #333;
+        border-bottom-left-radius: 12px;
+        border-bottom-right-radius: 12px;
+        font-family: 'Inter', sans-serif;
+        font-size: 1.1rem;
+        color: #fff;
+    }
+    .ql-editor {
+        min-height: 400px;
+        line-height: 1.8;
+    }
+    .ql-snow .ql-stroke { stroke: #fff !important; }
+    .ql-snow .ql-fill { fill: #fff !important; }
+    .ql-snow .ql-picker { color: #fff !important; }
+    .ql-snow .ql-picker-options { background-color: #222 !important; border: 1px solid #444 !important; color: #fff !important; }
+    .ql-editor.ql-blank::before { color: #555 !important; font-style: normal; }
+</style>
 {% endblock %}
