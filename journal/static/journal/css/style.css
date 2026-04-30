@@ -561,53 +561,17 @@ body {
     padding: 1rem 0;
 }
 
-/* Quill Content Fixes */
-.entry-content-body.ql-editor ul, 
+/* Quill Content Fixes - Relying on Quill's Snow theme CSS */
+.entry-content-body.ql-editor {
+    padding: 1rem 0;
+}
+
+.entry-content-body.ql-editor ul,
 .entry-content-body.ql-editor ol {
-    padding-left: 2rem !important;
-    margin-bottom: 1.5rem !important;
-}
-
-.entry-content-body.ql-editor li {
-    margin-bottom: 0.5rem !important;
-    list-style-type: inherit !important;
-}
-
-.entry-content-body.ql-editor ul {
-    list-style-type: disc !important;
-}
-
-.entry-content-body.ql-editor ol {
-    list-style-type: decimal !important;
-}
-
-/* Handle Checkboxes in Quill */
-.entry-content-body.ql-editor li[data-list="checked"],
-.entry-content-body.ql-editor li[data-list="unchecked"] {
     list-style-type: none !important;
-    position: relative;
-    padding-left: 2rem !important;
 }
 
-.entry-content-body.ql-editor li[data-list="checked"]::before {
-    content: '\f14a' !important; /* fa-check-square */
-    font-family: 'Font Awesome 6 Free' !important;
-    font-weight: 900 !important;
-    position: absolute;
-    left: 0;
-    color: var(--primary-color);
-}
-
-.entry-content-body.ql-editor li[data-list="unchecked"]::before {
-    content: '\f0c8' !important; /* fa-square */
-    font-family: 'Font Awesome 6 Free' !important;
-    font-weight: 400 !important;
-    position: absolute;
-    left: 0;
-    color: var(--text-dim);
-}
-
-.entry-content-body p {
+.entry-content-body.ql-editor p {
     margin-bottom: 1.5rem;
 }
 
