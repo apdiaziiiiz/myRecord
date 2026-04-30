@@ -55,37 +55,28 @@
         </div>
 
         <!-- Media Attachments -->
+        <!-- Media Links (Icons Only) -->
         {% if entry.images.all or entry.audio or entry.video %}
-        <div class="detail-media-section">
+        <div class="media-links-row">
             {% if entry.images.all %}
-            <div class="detail-image-grid" style="margin-bottom: 2rem;">
                 {% for img in entry.images.all %}
-                <div class="detail-img-card">
-                    <img src="{{ img.image.url }}" alt="Journal Image">
-                </div>
+                <a href="{{ img.image.url }}" class="media-link-item" title="View Image" target="_blank">
+                    <i class="fas fa-image"></i>
+                </a>
                 {% endfor %}
-            </div>
             {% endif %}
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-                {% if entry.audio %}
-                <div class="card" style="background: white; border: 1px solid #eee;">
-                    <div class="stat-label" style="color: var(--palette-dark);">Audio Note</div>
-                    <audio controls style="width: 100%; margin-top: 1rem;">
-                        <source src="{{ entry.audio.url }}" type="audio/mpeg">
-                    </audio>
-                </div>
-                {% endif %}
+            {% if entry.audio %}
+            <a href="{{ entry.audio.url }}" class="media-link-item" title="Listen to Audio" target="_blank">
+                <i class="fas fa-microphone"></i>
+            </a>
+            {% endif %}
 
-                {% if entry.video %}
-                <div class="card" style="background: white; border: 1px solid #eee;">
-                    <div class="stat-label" style="color: var(--palette-dark);">Video Note</div>
-                    <video controls style="width: 100%; margin-top: 1rem; border-radius: 12px;">
-                        <source src="{{ entry.video.url }}" type="video/mp4">
-                    </video>
-                </div>
-                {% endif %}
-            </div>
+            {% if entry.video %}
+            <a href="{{ entry.video.url }}" class="media-link-item" title="Watch Video" target="_blank">
+                <i class="fas fa-video"></i>
+            </a>
+            {% endif %}
         </div>
         {% endif %}
     </div>
