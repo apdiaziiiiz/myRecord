@@ -9,6 +9,13 @@
     --accent-orange: #ff8533;
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
+
+    /* New Palette */
+    --palette-mint: #B4DED1;
+    --palette-grey: #E2EAE1;
+    --palette-cream: #F7F6F0;
+    --palette-rose: #D99B9B;
+    --palette-dark: #333;
 }
 
 * {
@@ -431,4 +438,267 @@ body {
     .main-content {
         margin-left: 80px;
     }
+}
+
+/* Entry Detail Specifics */
+.entry-hero {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 32px 32px 0 0;
+    margin-bottom: -100px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 -120px 100px -50px var(--palette-cream);
+}
+
+.entry-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, 
+        rgba(255,255,255,0.05) 0%, 
+        transparent 30%, 
+        var(--palette-cream) 100%);
+}
+
+.entry-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1rem 4rem;
+}
+
+.entry-header {
+    background: linear-gradient(to bottom, 
+        rgba(247, 246, 240, 0.7) 0%, 
+        rgba(247, 246, 240, 1) 150px);
+    border-radius: 32px;
+    padding: 4rem 5rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    position: relative;
+    color: var(--palette-dark);
+    border: 1px solid rgba(255,255,255,0.3);
+    backdrop-filter: blur(20px);
+}
+
+.date-badge {
+    position: absolute;
+    top: -50px;
+    left: 5rem;
+    width: 100px;
+    height: 110px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 10;
+    border: 1px solid var(--palette-grey);
+}
+
+.date-badge .month {
+    background: var(--palette-rose);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 8px 0;
+    letter-spacing: 2px;
+}
+
+.date-badge .day {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--palette-dark);
+}
+
+.date-badge .year {
+    font-size: 0.8rem;
+    text-align: center;
+    padding-bottom: 8px;
+    color: var(--text-dim);
+    font-weight: 600;
+}
+
+.entry-title-row {
+    display: flex;
+  
+    align-items: center;
+    margin-bottom: 3rem;
+    
+}
+
+.entry-title-group h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    margin: 0;
+    color: var(--palette-dark);
+    letter-spacing: -1.5px;
+    
+}
+
+.entry-mood-large {
+    font-size: 4rem;
+    line-height: 1;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+}
+
+.entry-content-body {
+    font-size: 1.3rem;
+    line-height: 2;
+    font-weight: 400;
+    color: #2c3e50;
+    padding: 1rem 0;
+}
+
+/* Quill Content Fixes */
+.entry-content-body.ql-editor ul, 
+.entry-content-body.ql-editor ol {
+    padding-left: 2rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.entry-content-body.ql-editor li {
+    margin-bottom: 0.5rem !important;
+    list-style-type: inherit !important;
+}
+
+.entry-content-body.ql-editor ul {
+    list-style-type: disc !important;
+}
+
+.entry-content-body.ql-editor ol {
+    list-style-type: decimal !important;
+}
+
+/* Handle Checkboxes in Quill */
+.entry-content-body.ql-editor li[data-list="checked"],
+.entry-content-body.ql-editor li[data-list="unchecked"] {
+    list-style-type: none !important;
+    position: relative;
+    padding-left: 2rem !important;
+}
+
+.entry-content-body.ql-editor li[data-list="checked"]::before {
+    content: '\f14a' !important; /* fa-check-square */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900 !important;
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+}
+
+.entry-content-body.ql-editor li[data-list="unchecked"]::before {
+    content: '\f0c8' !important; /* fa-square */
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 400 !important;
+    position: absolute;
+    left: 0;
+    color: var(--text-dim);
+}
+
+.entry-content-body p {
+    margin-bottom: 1.5rem;
+}
+
+/* Hamburger Menu Refinement */
+.action-dropdown {
+    position: absolute;
+    top: 2.5rem;
+    right: 3rem;
+    z-index: 20;
+}
+
+.hamburger-btn {
+    background: var(--palette-grey);
+    border: none;
+    color: var(--palette-dark);
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.hamburger-btn:hover {
+    background: var(--palette-mint);
+    transform: rotate(90deg);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    padding: 8px;
+    min-width: 150px;
+    display: none;
+    flex-direction: column;
+}
+
+.dropdown-menu.show {
+    display: flex;
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--palette-dark);
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: var(--palette-mint);
+}
+
+.dropdown-item.delete:hover {
+    background: #ffe5e5;
+    color: #cc0000;
+}
+
+/* Media in Detail */
+.detail-media-section {
+    margin-top: 3rem;
+}
+
+.detail-image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.detail-img-card {
+    border-radius: 16px;
+    overflow: hidden;
+    height: 200px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.detail-img-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
