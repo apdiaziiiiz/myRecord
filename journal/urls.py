@@ -12,7 +12,8 @@ urlpatterns = [
     path('topics/new/', views.TopicCreateView.as_view(), name='topic_create'),
     path('topics/<int:pk>/edit/', views.TopicUpdateView.as_view(), name='topic_update'),
     path('topics/<int:pk>/delete/', views.TopicDeleteView.as_view(), name='topic_delete'),
+    path('topics/<int:pk>/', views.TopicDetailView.as_view(), name='topic_detail'),
 
-    # path('signup/', views.register),
+    
 ]
 

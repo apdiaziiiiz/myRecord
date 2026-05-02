@@ -144,6 +144,12 @@ class EntryDetailView(DetailView):
     template_name = 'journal/entry/entry_detail.html'
     context_object_name = 'entry'
 
+# i added 
+class TopicDetailView(DetailView):
+    model = Topic
+    template_name = 'journal/topic/topic_detail.html'
+    context_object_name = 'topic'
+
 class TopicListView(ListView):
     model = Topic
     template_name = 'journal/topic/topic_list.html'

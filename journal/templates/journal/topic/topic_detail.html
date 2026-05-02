@@ -1,0 +1,67 @@
+{% extends 'journal/base.html' %}
+{% load static %}
+
+{% block title %}Topic Details | MyRecord{% endblock %}
+
+{% block content %}
+<div class="entry-hero" style="background-image: url('{% static 'journal/img/nature.jpg' %}');">
+    <div class="entry-hero-overlay"></div>
+</div>
+
+<div class="entry-container">
+    <div class="entry-header">
+        <!-- Date Badge -->
+        <div class="date-badge">
+            <div class="month">{{topic.created_at|date:"M"}}</div>
+            <div class="day">{{topic.created_at|date:"d"}}</div>
+            <div class="year">{{topic.created_at|date:"Y"}}</div>
+           
+        </div>
+
+        <!-- Hamburger Actions -->
+        <div class="action-dropdown">
+            <button class="hamburger-btn" id="hamburgerBtn" title="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="{% url 'topic_update' topic.pk %}" class="dropdown-item">
+                    <i class="fas fa-edit"></i> Edit 
+                </a>
+                <a href="{% url 'topic_delete' topic.pk %}" class="dropdown-item delete">
+                    <i class="fas fa-trash"></i> Delete 
+                </a>
+            </div>
+        </div>
+
+        
+
+        <!-- Content Body -->
+        <div class="entry-content-body ql-editor">
+            {{ topic.content|safe }}
+        </div>
+
+       
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        hamburgerBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function() {
+            dropdownMenu.classList.remove('show');
+        });
+
+        dropdownMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+</script>
+{% endblock %}
