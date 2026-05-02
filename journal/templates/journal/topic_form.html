@@ -19,7 +19,7 @@
         background-color: #111;
         color: #fff;
         font-family: 'Inter', sans-serif;
-        font-size: 1.1rem;
+        font-size: 1.5rem;
     }
     .ql-editor {
         min-height: 300px;
@@ -32,11 +32,41 @@
     .ql-snow .ql-stroke {
         stroke: #fff;
     }
+    .ql-snow .ql-stroke-miter {
+        stroke: #fff;
+    }
     .ql-snow .ql-fill {
         fill: #fff;
     }
     .ql-snow .ql-picker {
         color: #fff;
+    }
+    /* Toolbar hover/active states for your primary color */
+    .ql-toolbar.ql-snow button:hover .ql-stroke,
+    .ql-toolbar.ql-snow button:focus .ql-stroke,
+    .ql-toolbar.ql-snow button.ql-active .ql-stroke,
+    .ql-toolbar.ql-snow .ql-picker-label:hover .ql-stroke,
+    .ql-toolbar.ql-snow .ql-picker-label.ql-active .ql-stroke,
+    .ql-toolbar.ql-snow .ql-picker-item:hover .ql-stroke,
+    .ql-toolbar.ql-snow .ql-picker-item.ql-selected .ql-stroke {
+        stroke: var(--primary-color) !important;
+    }
+    .ql-toolbar.ql-snow button:hover .ql-fill,
+    .ql-toolbar.ql-snow button:focus .ql-fill,
+    .ql-toolbar.ql-snow button.ql-active .ql-fill,
+    .ql-toolbar.ql-snow .ql-picker-label:hover .ql-fill,
+    .ql-toolbar.ql-snow .ql-picker-label.ql-active .ql-fill,
+    .ql-toolbar.ql-snow .ql-picker-item:hover .ql-fill,
+    .ql-toolbar.ql-snow .ql-picker-item.ql-selected .ql-fill {
+        fill: var(--primary-color) !important;
+    }
+    .ql-toolbar.ql-snow .ql-picker-label:hover,
+    .ql-toolbar.ql-snow .ql-picker-label.ql-active {
+        color: var(--primary-color) !important;
+    }
+    .ql-snow .ql-picker-options {
+        background-color: #222;
+        border-color: var(--border-color);
     }
 </style>
 {% endblock %}
@@ -57,7 +87,7 @@
             
             <!-- Title -->
             <div class="form-group">
-                <label class="form-label">Topic Title</label>
+                <label class="form-label">Topic </label>
                 {{ form.title }}
                 {% if form.title.errors %}
                 <div style="color: #ff4444; font-size: 0.9rem; margin-top: 0.5rem;">
@@ -101,14 +131,13 @@
     // Initialize Quill editor
     const quill = new Quill('#editor-container', {
         theme: 'snow',
-        placeholder: 'Write your thoughts here...',
         modules: {
             toolbar: [
-                [{ 'header': [1, 2, 3, false] }],
+    
+                [{ 'size': ['small', false, 'large', 'huge'] }],
                 ['bold', 'italic', 'underline', 'strike'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['blockquote', 'code-block'],
-                ['link'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet'}],
                 ['clean']
             ]
         }
