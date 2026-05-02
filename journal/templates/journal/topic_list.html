@@ -1,0 +1,66 @@
+{% extends 'journal/base.html' %}
+{% load static %}
+
+{% block title %}Topics | MyRecord{% endblock %}
+
+{% block content %}
+<div class="header-row" style="margin-bottom: 2rem;">
+    <div>
+        <h1 class="page-title" style="font-size: 2.5rem; letter-spacing: -1px; color: #fff;">
+            My <span style="color: var(--primary-color);">Topics</span>
+        </h1>
+        <p style="color: var(--text-dim); font-weight: 500; margin-top: 0.2rem;">Thoughts, goals, and personal reflections.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'topic_create' %}" class="btn btn-primary" style="box-shadow: 0 8px 20px rgba(255, 107, 0, 0.2);">
+            <i class="fas fa-plus"></i>
+            <span>New Topic</span>
+        </a>
+    </div>
+</div>
+
+<div class="topics-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+    {% for topic in topics %}
+    <a href="{% url 'topic_update' topic.pk %}" style="text-decoration: none; color: inherit;">
+        <div class="card" style="height: 100%; transition: all 0.3s ease; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--primary-color); margin: 0;">{{ topic.title }}</h3>
+            </div>
+            
+            <div style="color: var(--text-dim); font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                <!-- Strip HTML tags for preview using striptags -->
+                {{ topic.content|striptags|safe }}
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: auto;">
+                <span style="font-size: 0.8rem; color: var(--text-dim); font-weight: 600;">
+                    <i class="far fa-calendar-alt" style="margin-right: 5px;"></i> {{ topic.created_at|date:"M d, Y" }}
+                </span>
+                
+                <form action="{% url 'topic_delete' topic.pk %}" method="post" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn" style="background: transparent; padding: 0; color: #ff4444;" onclick="return confirm('Are you sure you want to delete this topic?');">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </a>
+    {% empty %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: var(--card-bg); border-radius: 20px; border: 1px dashed var(--border-color);">
+        <i class="fa-regular fa-lightbulb" style="font-size: 3rem; color: var(--text-dim); margin-bottom: 1rem;"></i>
+        <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 0.5rem;">No topics yet</h3>
+        <p style="color: var(--text-dim); margin-bottom: 1.5rem;">Start writing your goals, reflections, or ideas.</p>
+        <a href="{% url 'topic_create' %}" class="btn btn-primary">Create Your First Topic</a>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border-color: var(--primary-color);
+    }
+</style>
+{% endblock %}

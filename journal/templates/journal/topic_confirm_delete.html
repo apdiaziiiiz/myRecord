@@ -1,0 +1,26 @@
+{% extends 'journal/base.html' %}
+
+{% block title %}Delete Topic | MyRecord{% endblock %}
+
+{% block content %}
+<div class="form-card" style="max-width: 600px; margin: 5rem auto; text-align: center;">
+    <div class="card" style="padding: 3rem;">
+        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #ff4444; margin-bottom: 1.5rem;"></i>
+        
+        <h1 style="font-size: 2rem; margin-bottom: 1rem;">Delete Topic?</h1>
+        <p style="color: var(--text-dim); margin-bottom: 2rem; font-size: 1.1rem;">
+            Are you sure you want to delete the topic <strong>"{{ object.title }}"</strong>? This action cannot be undone.
+        </p>
+
+        <form method="post" style="display: flex; gap: 1rem; justify-content: center;">
+            {% csrf_token %}
+            <a href="{% url 'topic_list' %}" class="btn" style="background: var(--card-bg); color: #fff; border: 1px solid var(--border-color);">
+                Cancel
+            </a>
+            <button type="submit" class="btn" style="background: #ff4444; color: white;">
+                <i class="fas fa-trash"></i> Delete Topic
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

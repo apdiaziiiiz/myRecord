@@ -1,5 +1,5 @@
 from django import forms
-from .models import JournalEntry, JournalImage
+from .models import JournalEntry, JournalImage, Topic
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -26,4 +26,13 @@ class JournalEntryForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Write your thoughts here...'}),
             'mood': forms.Select(attrs={'class': 'mood-select'}),
+        }
+
+class TopicForm(forms.ModelForm):
+    class Meta:
+        model = Topic
+        fields = ['title', 'content']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Topic Title...'}),
+            'content': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Write your thoughts here...'}),
         }

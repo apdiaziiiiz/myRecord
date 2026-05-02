@@ -3,8 +3,8 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.urls import reverse_lazy
 from django.db.models import Count
 from django.utils import timezone
-from .models import JournalEntry, JournalImage
-from .forms import JournalEntryForm
+from .models import JournalEntry, JournalImage, Topic
+from .forms import JournalEntryForm, TopicForm
 import datetime
 import json
 
@@ -141,3 +141,25 @@ class EntryDetailView(DetailView):
     model = JournalEntry
     template_name = 'journal/entry_detail.html'
     context_object_name = 'entry'
+
+class TopicListView(ListView):
+    model = Topic
+    template_name = 'journal/topic_list.html'
+    context_object_name = 'topics'
+
+class TopicCreateView(CreateView):
+    model = Topic
+    form_class = TopicForm
+    template_name = 'journal/topic_form.html'
+    success_url = reverse_lazy('topic_list')
+
+class TopicUpdateView(UpdateView):
+    model = Topic
+    form_class = TopicForm
+    template_name = 'journal/topic_form.html'
+    success_url = reverse_lazy('topic_list')
+
+class TopicDeleteView(DeleteView):
+    model = Topic
+    template_name = 'journal/topic_confirm_delete.html'
+    success_url = reverse_lazy('topic_list')

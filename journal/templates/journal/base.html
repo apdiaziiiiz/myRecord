@@ -35,6 +35,12 @@
                     </li>
                     
                     <li class="nav-item">
+                        <a href="{% url 'topic_list' %}" class="nav-link {% if 'topics' in request.path %}active{% endif %}">
+                            <i class="fa-regular fa-lightbulb"></i>
+                            <span>Topics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="#" class="nav-link">
                             <i class="fas fa-search"></i>
                             <span>Diarly History</span>
