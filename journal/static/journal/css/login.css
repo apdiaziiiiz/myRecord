@@ -1,0 +1,332 @@
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --bg-white: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --accent: #0f172a; /* Midnight Blue/Black */
+            --gray-light: #f3f4f6;
+            --gray-border: #e5e7eb;
+            --anim-speed: 0.4s;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            background-color: var(--bg-white);
+        }
+
+        /* --- LEFT PANEL (The Abstract Animation) --- */
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Subtle texture overlay */
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* CSS Only Art for Left Panel */
+        .art-object {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, #e2e8f0, #ffffff);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 
+                20px 20px 60px #bebebe,
+                -20px -20px 60px #ffffff;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .art-object::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+
+        /* --- RIGHT PANEL (The Signup) --- */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-white);
+            padding: 4rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .header {
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.05rem;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* --- THE HIDING INPUT ANIMATION --- */
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+            height: 60px; /* Fixed height for the container */
+            perspective: 1000px; /* Essential for 3D effect */
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--anim-speed) cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform-style: preserve-3d;
+        }
+
+        /* The "Cover" that hides the input */
+        .input-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding-left: 1.5rem;
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: inset 0 0 0 1px #e2e8f0;
+            transition: all var(--anim-speed) ease;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        /* The decorative bar on the cover */
+        .input-cover::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            width: 40px;
+            height: 4px;
+            background-color: #cbd5e1;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        /* The Actual Input Field (Hidden initially) */
+        .real-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: var(--bg-white);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 0 1.5rem;
+            font-size: 1rem;
+            font-family: var(--font-main);
+            color: var(--text-main);
+            outline: none;
+            opacity: 0; /* Invisible initially */
+            transform: translateZ(-20px) translateY(10px); /* Pushed back */
+            transition: all var(--anim-speed) ease;
+            pointer-events: none; /* Can't click until revealed */
+        }
+
+        /* --- HOVER & FOCUS STATES (The "Reveal") --- */
+        
+        /* When hovering the group, the cover slides up and fades */
+        .input-group:hover .input-cover {
+            transform: translateY(-100%) scale(0.9);
+            opacity: 0;
+        }
+        
+        /* When hovering, the real input slides in */
+        .input-group:hover .real-input,
+        .real-input:focus {
+            opacity: 1;
+            transform: translateZ(0) translateY(0);
+            pointer-events: all;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Keep it open if user is typing (focus) */
+        .input-group:focus-within .input-cover {
+            transform: translateY(-120%) scale(0.8);
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .input-group:focus-within .real-input {
+            opacity: 1;
+            transform: translateZ(0) translateY(0);
+            pointer-events: all;
+        }
+
+        /* --- BUTTON --- */
+        .btn-signup {
+            width: 100%;
+            padding: 1.2rem;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.3);
+        }
+
+        .btn-signup:active {
+            transform: translateY(0);
+        }
+
+        .footer-text {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        
+        .footer-text a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .footer-text a:hover {
+            border-color: var(--text-main);
+        }
+
+
+        /* the show password icon */
+        /* Position the toggle button relative to the wrapper */
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    
+    /* Animation Properties (Matches real-input) */
+    opacity: 0; 
+    transform: translateZ(-20px) translateY(10px) translateY(-50%); /* Combined Y offsets */
+    transition: all var(--anim-speed) ease;
+    pointer-events: none; /* Can't click when hidden */
+    z-index: 20; /* Sit on top of input */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-toggle:hover {
+    color: var(--accent);
+}
+
+/* --- THE REVEAL LOGIC --- */
+
+/* When hovering the group, reveal the eye */
+.input-group:hover .password-toggle {
+    opacity: 1;
+    transform: translateZ(0) translateY(-50%);
+    pointer-events: all;
+}
+
+/* When typing (focus), keep the eye visible */
+.input-group:focus-within .password-toggle {
+    opacity: 1;
+    transform: translateZ(0) translateY(-50%);
+    pointer-events: all;
+}
+
+/* username is already registered error */
+/* The Error Message Styling */
+.error-msg {
+    position: absolute;
+    top: -22px; /* Sits just above the input */
+    left: 5px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ef4444; /* Premium Red */
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+/* The State: When the parent has .error-active */
+.error-active .error-msg {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.error-active .real-input {
+    border-color: #ef4444 !important;
+    background-color: #fffafb; /* Subtle red tint */
+}
+
+/* Shake animation for the whole group on error */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.error-active .input-wrapper {
+    animation: shake 0.3s ease-in-out;
+}

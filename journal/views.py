@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 from django.db.models import Count
 from django.utils import timezone
 from .models import JournalEntry, JournalImage, Topic
@@ -79,7 +81,7 @@ class DashboardView(ListView):
 class EntryCreateView(CreateView):
     model = JournalEntry
     form_class = JournalEntryForm
-    template_name = 'journal/entry_form.html'
+    template_name = 'journal/entry/entry_form.html'
     success_url = reverse_lazy('dashboard')
 
     def dispatch(self, request, *args, **kwargs):
@@ -119,7 +121,7 @@ class EntryCreateView(CreateView):
 class EntryUpdateView(UpdateView):
     model = JournalEntry
     form_class = JournalEntryForm
-    template_name = 'journal/entry_form.html'
+    template_name = 'journal/entry/entry_form.html'
     success_url = reverse_lazy('dashboard')
 
     def form_valid(self, form):
@@ -135,31 +137,33 @@ class EntryUpdateView(UpdateView):
 class EntryDeleteView(DeleteView):
     model = JournalEntry
     success_url = reverse_lazy('dashboard')
-    template_name = 'journal/entry_confirm_delete.html'
+    template_name = 'journal/entry/entry_confirm_delete.html'
 
 class EntryDetailView(DetailView):
     model = JournalEntry
-    template_name = 'journal/entry_detail.html'
+    template_name = 'journal/entry/entry_detail.html'
     context_object_name = 'entry'
 
 class TopicListView(ListView):
     model = Topic
-    template_name = 'journal/topic_list.html'
+    template_name = 'journal/topic/topic_list.html'
     context_object_name = 'topics'
 
 class TopicCreateView(CreateView):
     model = Topic
     form_class = TopicForm
-    template_name = 'journal/topic_form.html'
+    template_name = 'journal/topic/topic_form.html'
     success_url = reverse_lazy('topic_list')
 
 class TopicUpdateView(UpdateView):
     model = Topic
     form_class = TopicForm
-    template_name = 'journal/topic_form.html'
+    template_name = 'journal/topic/topic_form.html'
     success_url = reverse_lazy('topic_list')
 
 class TopicDeleteView(DeleteView):
     model = Topic
-    template_name = 'journal/topic_confirm_delete.html'
+    template_name = 'journal/topic/topic_confirm_delete.html'
     success_url = reverse_lazy('topic_list')
+
+
