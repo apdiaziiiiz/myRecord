@@ -76,7 +76,7 @@
             <button type="submit" class="btn btn-primary" style=" justify-content: center; width: 300px;">
                 <i class="fas fa-save"></i> Save Entry
             </button>
-            <a href="{% url 'dashboard' %}" class="btn" style="background: #222; color: #fff;">Cancel</a>
+            <a href="{% url 'dashboard' %}" class="btn" style="background: var(--palette-grey); color: var(--palette-dark); border: 1px solid var(--border-color);">Cancel</a>
         </div>
     </form>
 </div>
@@ -137,38 +137,5 @@
         });
     }
 </script>
-<style>
-    /* Quill Custom Styling to match dark theme */
-    #editor-container {
-        width: 100%;
-        max-width: 840px;
-        background: #111;
-        margin-bottom: 1rem;
-    }
-    .ql-toolbar.ql-snow {
-        border: 1px solid #333;
-        background: #1a1a1a;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .ql-container.ql-snow {
-        border: 1px solid #333;
-        border-bottom-left-radius: 12px;
-        border-bottom-right-radius: 12px;
-        font-family: 'Inter', sans-serif;
-        font-size: 1.1rem;
-        color: #fff;
-    }
-    .ql-editor {
-        min-height: 400px;
-        line-height: 1.8;
-    }
-    .ql-snow .ql-stroke { stroke: #fff !important; }
-    .ql-snow .ql-fill { fill: #fff !important; }
-    .ql-snow .ql-picker { color: #fff !important; }
-    .ql-snow .ql-picker-options { background-color: #222 !important; border: 1px solid #444 !important; color: #fff !important; }
-    .ql-editor.ql-blank::before { color: #555 !important; font-style: normal; }
-</style>
+
 {% endblock %}

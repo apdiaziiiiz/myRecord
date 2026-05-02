@@ -8,16 +8,16 @@
     <div>
         <h1 class="page-title" style="font-size: 2.5rem; letter-spacing: -1px;">
             <span style="color: var(--primary-color);">{{ view_date|date:"F" }}</span> 
-            <span style="color: #fff;">{{ view_date|date:"Y" }}</span>
+            <span style="color: var(--palette-dark);">{{ view_date|date:"Y" }}</span>
         </h1>
         <p style="color: var(--text-dim); font-weight: 500; margin-top: 0.2rem;">Your Journal Journey</p>
     </div>
     <div style="display: flex; gap: 12px; align-items: center;">
-        <div style="background: #111; border-radius: 12px; padding: 4px; display: flex; gap: 4px;">
+        <div style="background: #fff; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.02); border-radius: 12px; padding: 4px; display: flex; gap: 4px;">
             <a href="?month={{ prev_month }}&year={{ prev_year }}" class="btn" style="background: transparent; color: var(--text-dim); padding: 0.6rem 1rem;"><i class="fas fa-chevron-left"></i></a>
             <a href="?month={{ next_month }}&year={{ next_year }}" class="btn" style="background: transparent; color: var(--text-dim); padding: 0.6rem 1rem;"><i class="fas fa-chevron-right"></i></a>
         </div>
-        <a href="{% url 'entry_create' %}" class="btn btn-primary" style="box-shadow: 0 8px 20px rgba(255, 107, 0, 0.2);">
+        <a href="{% url 'entry_create' %}" class="btn btn-primary" style="box-shadow: 0 8px 20px rgba(217, 155, 155, 0.3);">
             <i class="fas fa-plus"></i>
             <span>New Entry</span>
         </a>
@@ -88,7 +88,7 @@
             datasets: [{
                 label: 'Days',
                 data: moodCounts,
-                backgroundColor: '#ff6b00',
+                backgroundColor: '#B4DED1',
                 borderRadius: 8,
                 barThickness: 30,
             }]
@@ -101,12 +101,12 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#333' },
-                    ticks: { color: '#a0a0a0' }
+                    grid: { color: '#E2EAE1' },
+                    ticks: { color: '#718096' }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#a0a0a0' }
+                    ticks: { color: '#718096' }
                 }
             }
         }
