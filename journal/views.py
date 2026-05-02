@@ -3,6 +3,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.utils import timezone
 from .models import JournalEntry, JournalImage, Topic
@@ -10,7 +11,7 @@ from .forms import JournalEntryForm, TopicForm
 import datetime
 import json
 
-class DashboardView(ListView):
+class DashboardView(LoginRequiredMixin, ListView):
     model = JournalEntry
     template_name = 'journal/dashboard.html'
     context_object_name = 'entries'
@@ -78,7 +79,7 @@ class DashboardView(ListView):
         })
         return context
 
-class EntryCreateView(CreateView):
+class EntryCreateView(LoginRequiredMixin, CreateView):
     model = JournalEntry
     form_class = JournalEntryForm
     template_name = 'journal/entry/entry_form.html'
@@ -118,7 +119,7 @@ class EntryCreateView(CreateView):
             JournalImage.objects.create(entry=self.object, image=img)
         return response
 
-class EntryUpdateView(UpdateView):
+class EntryUpdateView(LoginRequiredMixin, UpdateView):
     model = JournalEntry
     form_class = JournalEntryForm
     template_name = 'journal/entry/entry_form.html'
@@ -134,40 +135,40 @@ class EntryUpdateView(UpdateView):
                 JournalImage.objects.create(entry=self.object, image=img)
         return response
 
-class EntryDeleteView(DeleteView):
+class EntryDeleteView(LoginRequiredMixin, DeleteView):
     model = JournalEntry
     success_url = reverse_lazy('dashboard')
     template_name = 'journal/entry/entry_confirm_delete.html'
 
-class EntryDetailView(DetailView):
+class EntryDetailView(LoginRequiredMixin, DetailView):
     model = JournalEntry
     template_name = 'journal/entry/entry_detail.html'
     context_object_name = 'entry'
 
 # i added 
-class TopicDetailView(DetailView):
+class TopicDetailView(LoginRequiredMixin, DetailView):
     model = Topic
     template_name = 'journal/topic/topic_detail.html'
     context_object_name = 'topic'
 
-class TopicListView(ListView):
+class TopicListView(LoginRequiredMixin, ListView):
     model = Topic
     template_name = 'journal/topic/topic_list.html'
     context_object_name = 'topics'
 
-class TopicCreateView(CreateView):
+class TopicCreateView(LoginRequiredMixin, CreateView):
     model = Topic
     form_class = TopicForm
     template_name = 'journal/topic/topic_form.html'
     success_url = reverse_lazy('topic_list')
 
-class TopicUpdateView(UpdateView):
+class TopicUpdateView(LoginRequiredMixin, UpdateView):
     model = Topic
     form_class = TopicForm
     template_name = 'journal/topic/topic_form.html'
     success_url = reverse_lazy('topic_list')
 
-class TopicDeleteView(DeleteView):
+class TopicDeleteView(LoginRequiredMixin, DeleteView):
     model = Topic
     template_name = 'journal/topic/topic_confirm_delete.html'
     success_url = reverse_lazy('topic_list')

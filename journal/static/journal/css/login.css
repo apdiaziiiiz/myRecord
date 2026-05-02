@@ -294,39 +294,11 @@
     pointer-events: all;
 }
 
-/* username is already registered error */
 /* The Error Message Styling */
 .error-msg {
-    position: absolute;
-    top: -22px; /* Sits just above the input */
-    left: 5px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #ef4444; /* Premium Red */
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
-    pointer-events: none;
-}
-
-/* The State: When the parent has .error-active */
-.error-active .error-msg {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.error-active .real-input {
-    border-color: #ef4444 !important;
-    background-color: #fffafb; /* Subtle red tint */
-}
-
-/* Shake animation for the whole group on error */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-}
-
-.error-active .input-wrapper {
-    animation: shake 0.3s ease-in-out;
+    text-align: center;
+    margin-bottom: 1rem;
 }
