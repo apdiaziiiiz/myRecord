@@ -65,7 +65,7 @@
                 <span class="day-number" style="font-size: 0.8rem;">{{ day.day }}</span>
                 <span class="day-weekday"
                     style="font-size: 0.6rem; color: var(--primary-color); font-weight: 800; opacity: 0.7;">
-                    {{day|date|slice:":1" }}</span>
+                    {{day|date:'D'|slice:":1" }}</span>
             </div>
             {% if entry %}
             <a href="{% url 'entry_detail' entry.pk %}" style="text-decoration: none;">
