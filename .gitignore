@@ -1,5 +1,7 @@
 db.sqlite3
 .venv
 media
+myRecord/__pycache__
+journal/__pycache__/
 test.html
 test
