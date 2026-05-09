@@ -178,21 +178,50 @@ class TopicDeleteView(LoginRequiredMixin, DeleteView):
 class EntryAutosaveView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
-            data = json.loads(request.body)
+            # Handle both JSON and Multipart data
+            content_type = request.content_type.split(';')[0] if request.content_type else ''
+            if content_type == 'application/json':
+                data = json.loads(request.body)
+            else:
+                data = request.POST
+
             date_str = data.get('date')
             content = data.get('content')
             mood = data.get('mood')
             
-            if not date_str:
-                return JsonResponse({'status': 'error', 'message': 'Date is required'}, status=400)
+            if not date_str or date_str == 'undefined':
+                return JsonResponse({'status': 'error', 'message': 'Valid Date is required'}, status=400)
                 
-            date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+            try:
+                date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+            except ValueError:
+                return JsonResponse({'status': 'error', 'message': f'Invalid date format: {date_str}'}, status=400)
+            
+            # Prepare update defaults
+            defaults = {}
+            if content is not None: defaults['content'] = content
+            if mood is not None: defaults['mood'] = mood
+            
+            # Handle files if present
+            if 'audio' in request.FILES:
+                defaults['audio'] = request.FILES['audio']
+            if 'video' in request.FILES:
+                defaults['video'] = request.FILES['video']
+                
             entry, created = JournalEntry.objects.update_or_create(
                 date=date_obj,
-                defaults={'content': content, 'mood': mood}
+                defaults=defaults
             )
+            
+            # Handle images (multiple)
+            if 'images' in request.FILES:
+                images = request.FILES.getlist('images')
+                for img in images:
+                    JournalImage.objects.create(entry=entry, image=img)
+                    
             return JsonResponse({'status': 'success', 'id': entry.id})
         except Exception as e:
+            print(f"Autosave error: {str(e)}")
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 class TopicAutosaveView(LoginRequiredMixin, View):

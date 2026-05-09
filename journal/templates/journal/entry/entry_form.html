@@ -57,19 +57,30 @@
         </div>
 
         <div class="media-pill-row">
-            <label class="media-pill" for="input-voice">
-                <i class="fas fa-microphone"></i> Voice Note
+            <label class="media-pill {% if form.instance.pk and form.instance.audio %}has-file{% endif %}" for="input-voice">
+                <i class="fas fa-microphone"></i> {% if form.instance.pk and form.instance.audio %}Voice Note Attached{% else %}Voice Note{% endif %}
                 <input id="input-voice" type="file" name="audio" accept="audio/*" hidden>
             </label>
             <label class="media-pill" for="input-photo">
                 <i class="fas fa-camera"></i> Photo
                 <input id="input-photo" type="file" name="images" multiple accept="image/*" hidden>
             </label>
-            <label class="media-pill" for="input-video">
-                <i class="fas fa-video"></i> Video
+            <label class="media-pill {% if form.instance.pk and form.instance.video %}has-file{% endif %}" for="input-video">
+                <i class="fas fa-video"></i> {% if form.instance.pk and form.instance.video %}Video Attached{% else %}Video{% endif %}
                 <input id="input-video" type="file" name="video" accept="video/*" hidden>
             </label>
         </div>
+        
+        {% if form.instance.pk and form.instance.images.all %}
+        <div class="existing-images" style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+            {% for img in form.instance.images.all %}
+            <div class="image-preview" style="position: relative;">
+                <img src="{{ img.image.url }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #333;">
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div id="media-file-names" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.4rem; min-height:1.2rem;"></div>
 
         <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: center;">
@@ -176,30 +187,60 @@
         return cookieValue;
     }
 
-    async function performAutosave() {
+    async function performAutosave(files = null) {
         const mood = document.querySelector('input[name="mood"]:checked')?.value;
         const content = quill.root.innerHTML;
         const date = document.querySelector('input[name="date"]').value;
 
-        if (!content || content === '<p><br></p>') return;
+        if (!files && (!content || content === '<p><br></p>')) return;
 
         autosaveIndicator.textContent = 'Saving...';
         autosaveIndicator.style.display = 'inline';
         autosaveIndicator.style.opacity = '1';
 
         try {
+            let body;
+            let headers = {
+                'X-CSRFToken': getCookie('csrftoken'),
+            };
+
+            if (files) {
+                body = new FormData();
+                body.append('date', date);
+                body.append('content', content);
+                if (mood) body.append('mood', mood);
+                
+                for (const key in files) {
+                    if (files[key] instanceof FileList) {
+                        Array.from(files[key]).forEach(file => body.append(key, file));
+                    } else {
+                        body.append(key, files[key]);
+                    }
+                }
+            } else {
+                headers['Content-Type'] = 'application/json';
+                body = JSON.stringify({ mood, content, date });
+            }
+
             const response = await fetch('{% url "entry_autosave" %}', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'),
-                },
-                body: JSON.stringify({ mood, content, date }),
+                headers: headers,
+                body: body,
                 keepalive: true,
             });
             const result = await response.json();
             if (result.status === 'success') {
                 showAutosaveStatus('✓ Autosaved');
+                // Clear file inputs after upload to avoid re-uploading the same files on text change or final save
+                if (files) {
+                    for (const key in files) {
+                        const input = document.querySelector(`input[name="${key}"]`);
+                        if (input) input.value = '';
+                    }
+                    // Optional: update the UI to show they are "staged" or "uploaded"
+                    // The has-file classes will be updated on next page load, 
+                    // but we can also update them here if we want.
+                }
             } else {
                 showAutosaveStatus('✗ Save failed');
             }
@@ -211,13 +252,24 @@
 
     quill.on('text-change', () => {
         clearTimeout(autosaveTimeout);
-        autosaveTimeout = setTimeout(performAutosave, 3000);
+        autosaveTimeout = setTimeout(() => performAutosave(), 3000);
     });
 
     document.querySelectorAll('input[name="mood"]').forEach(radio => {
         radio.addEventListener('change', () => {
             clearTimeout(autosaveTimeout);
-            autosaveTimeout = setTimeout(performAutosave, 500);
+            autosaveTimeout = setTimeout(() => performAutosave(), 500);
+        });
+    });
+
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            updateFileDisplay();
+            const files = {};
+            if (input.files.length > 0) {
+                files[input.name] = input.name === 'images' ? input.files : input.files[0];
+                performAutosave(files);
+            }
         });
     });
 
@@ -261,5 +313,11 @@
     .ql-snow .ql-picker { color: #fff !important; }
     .ql-snow .ql-picker-options { background-color: #222 !important; border: 1px solid #444 !important; color: #fff !important; }
     .ql-editor.ql-blank::before { color: #555 !important; font-style: normal; }
+    
+    .media-pill.has-file {
+        background: rgba(255, 107, 0, 0.2) !important;
+        border-color: var(--primary-color) !important;
+        color: #fff !important;
+    }
 </style>
 {% endblock %}
