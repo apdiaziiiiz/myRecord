@@ -136,6 +136,96 @@
             }
         });
     }
+
+    // Autosave functionality
+    let autosaveTimeout;
+    const autosaveIndicator = document.createElement('span');
+    autosaveIndicator.style.fontSize = '0.9rem';
+    autosaveIndicator.style.color = '#aaa';
+    autosaveIndicator.style.marginLeft = '1rem';
+    autosaveIndicator.style.display = 'none';
+    autosaveIndicator.style.fontWeight = '500';
+    document.querySelector('.btn-primary').parentElement.appendChild(autosaveIndicator);
+
+    function showAutosaveStatus(text, duration = 3000) {
+        autosaveIndicator.textContent = text;
+        autosaveIndicator.style.display = 'inline';
+        if (duration) {
+            setTimeout(() => {
+                autosaveIndicator.style.opacity = '0';
+                setTimeout(() => {
+                    autosaveIndicator.style.display = 'none';
+                    autosaveIndicator.style.opacity = '1';
+                }, 500);
+            }, duration);
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function performAutosave() {
+        const mood = document.querySelector('input[name="mood"]:checked')?.value;
+        const content = quill.root.innerHTML;
+        const date = document.querySelector('input[name="date"]').value;
+
+        if (!content || content === '<p><br></p>') return;
+
+        autosaveIndicator.textContent = 'Saving...';
+        autosaveIndicator.style.display = 'inline';
+        autosaveIndicator.style.opacity = '1';
+
+        try {
+            const response = await fetch('{% url "entry_autosave" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({ mood, content, date }),
+                keepalive: true,
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                showAutosaveStatus('✓ Autosaved');
+            } else {
+                showAutosaveStatus('✗ Save failed');
+            }
+        } catch (error) {
+            showAutosaveStatus('✗ Save failed');
+            console.error('Autosave error:', error);
+        }
+    }
+
+    quill.on('text-change', () => {
+        clearTimeout(autosaveTimeout);
+        autosaveTimeout = setTimeout(performAutosave, 3000);
+    });
+
+    document.querySelectorAll('input[name="mood"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            clearTimeout(autosaveTimeout);
+            autosaveTimeout = setTimeout(performAutosave, 500);
+        });
+    });
+
+    window.addEventListener('beforeunload', () => {
+        if (autosaveTimeout) {
+            performAutosave();
+        }
+    });
 </script>
 <style>
     /* Quill Custom Styling to match dark theme */

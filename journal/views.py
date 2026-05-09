@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.http import JsonResponse
+from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
@@ -172,5 +174,52 @@ class TopicDeleteView(LoginRequiredMixin, DeleteView):
     model = Topic
     template_name = 'journal/topic/topic_confirm_delete.html'
     success_url = reverse_lazy('topic_list')
+
+class EntryAutosaveView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            date_str = data.get('date')
+            content = data.get('content')
+            mood = data.get('mood')
+            
+            if not date_str:
+                return JsonResponse({'status': 'error', 'message': 'Date is required'}, status=400)
+                
+            date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+            entry, created = JournalEntry.objects.update_or_create(
+                date=date_obj,
+                defaults={'content': content, 'mood': mood}
+            )
+            return JsonResponse({'status': 'success', 'id': entry.id})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+class TopicAutosaveView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            topic_id = data.get('id')
+            title = data.get('title')
+            content = data.get('content')
+            
+            if topic_id:
+                topic = Topic.objects.get(pk=topic_id)
+                topic.title = title if title else topic.title
+                topic.content = content if content is not None else topic.content
+                topic.save()
+            else:
+                if title or content:
+                    topic = Topic.objects.create(
+                        title=title if title else "Untitled Topic",
+                        content=content if content else ""
+                    )
+                    topic_id = topic.id
+                else:
+                    return JsonResponse({'status': 'ignored'})
+                    
+            return JsonResponse({'status': 'success', 'id': topic_id})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 

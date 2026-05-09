@@ -78,8 +78,103 @@
         content.value = quill.root.innerHTML;
     };
 
+    // Autosave functionality
+    let autosaveTimeout;
+    let currentTopicId = {% if object %}{{ object.pk }}{% else %}null{% endif %};
+    
+    const autosaveIndicator = document.createElement('span');
+    autosaveIndicator.style.fontSize = '0.9rem';
+    autosaveIndicator.style.color = '#aaa';
+    autosaveIndicator.style.marginLeft = '1rem';
+    autosaveIndicator.style.display = 'none';
+    autosaveIndicator.style.fontWeight = '500';
+    document.querySelector('.btn-primary').parentElement.appendChild(autosaveIndicator);
 
+    function showAutosaveStatus(text, duration = 3000) {
+        autosaveIndicator.textContent = text;
+        autosaveIndicator.style.display = 'inline';
+        if (duration) {
+            setTimeout(() => {
+                autosaveIndicator.style.opacity = '0';
+                setTimeout(() => {
+                    autosaveIndicator.style.display = 'none';
+                    autosaveIndicator.style.opacity = '1';
+                }, 500);
+            }, duration);
+        }
+    }
 
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function performAutosave() {
+        const titleInput = document.querySelector('input[name="title"]');
+        const title = titleInput ? titleInput.value : '';
+        const content = quill.root.innerHTML;
+
+        if (!title && (!content || content === '<p><br></p>')) return;
+
+        autosaveIndicator.textContent = 'Saving...';
+        autosaveIndicator.style.display = 'inline';
+        autosaveIndicator.style.opacity = '1';
+
+        try {
+            const response = await fetch('{% url "topic_autosave" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({ id: currentTopicId, title, content }),
+                keepalive: true,
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                showAutosaveStatus('✓ Autosaved');
+                if (result.id && !currentTopicId) {
+                    currentTopicId = result.id;
+                }
+            } else if (result.status === 'ignored') {
+                autosaveIndicator.style.display = 'none';
+            } else {
+                showAutosaveStatus('✗ Save failed');
+            }
+        } catch (error) {
+            showAutosaveStatus('✗ Save failed');
+            console.error('Autosave error:', error);
+        }
+    }
+
+    quill.on('text-change', () => {
+        clearTimeout(autosaveTimeout);
+        autosaveTimeout = setTimeout(performAutosave, 3000);
+    });
+
+    const titleInput = document.querySelector('input[name="title"]');
+    if (titleInput) {
+        titleInput.addEventListener('input', () => {
+            clearTimeout(autosaveTimeout);
+            autosaveTimeout = setTimeout(performAutosave, 3000);
+        });
+    }
+
+    window.addEventListener('beforeunload', () => {
+        if (autosaveTimeout) {
+            performAutosave();
+        }
+    });
 </script>
 <style>
     /* Quill Custom Styling to match dark theme */

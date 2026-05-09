@@ -18,7 +18,9 @@ urlpatterns = [
     path('topics/<int:pk>/edit/', views.TopicUpdateView.as_view(), name='topic_update'),
     path('topics/<int:pk>/delete/', views.TopicDeleteView.as_view(), name='topic_delete'),
     path('topics/<int:pk>/', views.TopicDetailView.as_view(), name='topic_detail'),
-
     
+    # Autosave endpoints
+    path('entry/autosave/', views.EntryAutosaveView.as_view(), name='entry_autosave'),
+    path('topics/autosave/', views.TopicAutosaveView.as_view(), name='topic_autosave'),
 ]
 
