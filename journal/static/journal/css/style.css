@@ -480,6 +480,10 @@ body {
     color: var(--palette-dark);
     border: 1px solid rgba(255,255,255,0.3);
     backdrop-filter: blur(20px);
+    max-width: 1005px;
+    width: 100%;
+     cursor: pointer ; 
+    user-select: none;
 }
 
 .date-badge {
@@ -552,15 +556,16 @@ body {
 
 .entry-content-body {
     font-size: 1.3rem;
-    line-height: 2;
+    /* line-height: 2; */
     font-weight: 400;
     color: #2c3e50;
     padding: 1rem 0;
+   
 }
 
 /* Quill Content Fixes - Relying on Quill's Snow theme CSS */
 .entry-content-body.ql-editor {
-    padding: 1rem 0;
+    padding: 1rem , 0;
 }
 
 .entry-content-body.ql-editor ul,
@@ -569,7 +574,7 @@ body {
 }
 
 .entry-content-body.ql-editor p {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Hamburger Menu Refinement */
