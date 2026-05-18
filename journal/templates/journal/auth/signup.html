@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {%load static %}
+    <link rel="stylesheet" href="{%static 'journal/css/login.css'%}">
+
+</head>
+<body>
+
+    <div class="left-panel">
+        <div class="art-object"></div>
+    </div>
+
+    <div class="right-panel">
+        <div class="form-container">
+            <div class="header">
+                <h1>Create an account</h1>
+                <p>Enter your details to get started.</p>
+            </div>
+
+            <form method="POST" action="{% url 'signup' %}">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <p style="color: #ef4444; margin-bottom: 1rem; text-align: center; font-weight: 500;">
+                    {{ form.non_field_errors.0 }}
+                </p>
+                {% endif %}
+
+                {% for field in form %}
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <div class="input-cover">{{ field.label }}</div>
+                        {{ field }}
+                    </div>
+                </div>
+                {% if field.errors %}
+                    <p style="color: #ef4444; font-size: 0.8rem; margin-top: -0.5rem; margin-bottom: 1rem;">{{ field.errors.0 }}</p>
+                {% endif %}
+                {% endfor %}
+
+                <button type="submit" class="btn-signup">Sign up</button>
+            </form>
+
+            <div class="footer-text" style="margin-top: 1.5rem; text-align: center; color: #888;">
+                Already have an account? <a href="{% url 'login' %}" style="color: rgb(41, 2, 233); text-decoration: none; font-weight: 500;">Log in</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Make the rendered form fields match the design
+        document.querySelectorAll('.input-wrapper input').forEach(input => {
+            input.classList.add('real-input');
+        });
+    </script>
+</body>
+</html>

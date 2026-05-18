@@ -54,6 +54,16 @@
                     </li>
                 </ul>
             </nav>
+            
+            <div style="margin-top: auto;">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer; color: inherit; font: inherit; padding: 0.8rem 1rem;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
         </aside>
 
         <!-- Main Content -->

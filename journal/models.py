@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class JournalEntry(models.Model):
     MOOD_CHOICES = [
@@ -12,9 +13,10 @@ class JournalEntry(models.Model):
         ('angry', 'Angry'),
     ]
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=6)
     content = models.TextField()
     mood = models.CharField(max_length=20, choices=MOOD_CHOICES, default='neutral')
-    date = models.DateField(default=timezone.now, unique=True)
+    date = models.DateField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     
     # Media fields (Optional)
@@ -24,6 +26,9 @@ class JournalEntry(models.Model):
     class Meta:
         ordering = ['-date', '-created_at']
         verbose_name_plural = "Journal Entries"
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'date'], name='unique_user_date')
+        ]
 
     def __str__(self):
         return f"{self.date} - {self.get_mood_display()}"
@@ -36,6 +41,7 @@ class JournalImage(models.Model):
         return f"Image for {self.entry.date}"
 
 class Topic(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=6)
     title = models.CharField(max_length=200)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
