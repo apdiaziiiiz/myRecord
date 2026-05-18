@@ -112,7 +112,7 @@
     });
 
     // Handle form submission
-    const form = document.querySelector('form');
+    const form = document.querySelector('form.card');
     form.onsubmit = function() {
         const content = document.querySelector('#hidden-content');
         content.value = quill.root.innerHTML;
@@ -231,6 +231,9 @@
             const result = await response.json();
             if (result.status === 'success') {
                 showAutosaveStatus('✓ Autosaved');
+                if (result.id) {
+                    form.action = `/entry/${result.id}/edit/`;
+                }
                 // Clear file inputs after upload to avoid re-uploading the same files on text change or final save
                 if (files) {
                     for (const key in files) {

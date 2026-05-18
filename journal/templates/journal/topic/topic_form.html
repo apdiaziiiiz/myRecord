@@ -72,7 +72,7 @@
     });
 
     // Handle form submission
-    const form = document.querySelector('form');
+    const form = document.querySelector('form.card');
     form.onsubmit = function () {
         const content = document.querySelector('#hidden-content');
         content.value = quill.root.innerHTML;
@@ -145,6 +145,9 @@
                 showAutosaveStatus('✓ Autosaved');
                 if (result.id && !currentTopicId) {
                     currentTopicId = result.id;
+                }
+                if (currentTopicId) {
+                    form.action = `/topics/${currentTopicId}/edit/`;
                 }
             } else if (result.status === 'ignored') {
                 autosaveIndicator.style.display = 'none';

@@ -104,24 +104,24 @@ class EntryCreateView(LoginRequiredMixin, CreateView):
     model = JournalEntry
     form_class = JournalEntryForm
     template_name = 'journal/entry/entry_form.html'
-    success_url = reverse_lazy('dashboard')
 
     def dispatch(self, request, *args, **kwargs):
-        date_str = request.GET.get('date')
-        if date_str:
-            try:
-                date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
-                existing_entry = JournalEntry.objects.filter(user=request.user, date=date_obj).first()
+        if request.method == 'GET':
+            date_str = request.GET.get('date')
+            if date_str:
+                try:
+                    date_obj = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+                    existing_entry = JournalEntry.objects.filter(user=request.user, date=date_obj).first()
+                    if existing_entry:
+                        return redirect('entry_update', pk=existing_entry.pk)
+                except ValueError:
+                    pass
+            else:
+                # Check for today if no date is specified
+                today = timezone.now().date()
+                existing_entry = JournalEntry.objects.filter(user=request.user, date=today).first()
                 if existing_entry:
                     return redirect('entry_update', pk=existing_entry.pk)
-            except ValueError:
-                pass
-        else:
-            # Check for today if no date is specified
-            today = timezone.now().date()
-            existing_entry = JournalEntry.objects.filter(user=request.user, date=today).first()
-            if existing_entry:
-                return redirect('entry_update', pk=existing_entry.pk)
         return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):
@@ -141,11 +141,13 @@ class EntryCreateView(LoginRequiredMixin, CreateView):
             JournalImage.objects.create(entry=self.object, image=img)
         return response
 
+    def get_success_url(self):
+        return reverse_lazy('entry_detail', kwargs={'pk': self.object.pk})
+
 class EntryUpdateView(LoginRequiredMixin, UpdateView):
     model = JournalEntry
     form_class = JournalEntryForm
     template_name = 'journal/entry/entry_form.html'
-    success_url = reverse_lazy('dashboard')
 
     def get_queryset(self):
         return JournalEntry.objects.filter(user=self.request.user)
@@ -157,6 +159,9 @@ class EntryUpdateView(LoginRequiredMixin, UpdateView):
             for img in images:
                 JournalImage.objects.create(entry=self.object, image=img)
         return response
+
+    def get_success_url(self):
+        return reverse_lazy('entry_detail', kwargs={'pk': self.object.pk})
 
 class EntryDeleteView(LoginRequiredMixin, DeleteView):
     model = JournalEntry
@@ -194,20 +199,24 @@ class TopicCreateView(LoginRequiredMixin, CreateView):
     model = Topic
     form_class = TopicForm
     template_name = 'journal/topic/topic_form.html'
-    success_url = reverse_lazy('topic_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+    def get_success_url(self):
+        return reverse_lazy('topic_detail', kwargs={'pk': self.object.pk})
+
 class TopicUpdateView(LoginRequiredMixin, UpdateView):
     model = Topic
     form_class = TopicForm
     template_name = 'journal/topic/topic_form.html'
-    success_url = reverse_lazy('topic_list')
 
     def get_queryset(self):
         return Topic.objects.filter(user=self.request.user)
+
+    def get_success_url(self):
+        return reverse_lazy('topic_detail', kwargs={'pk': self.object.pk})
 
 class TopicDeleteView(LoginRequiredMixin, DeleteView):
     model = Topic
