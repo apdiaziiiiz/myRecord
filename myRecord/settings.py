@@ -125,11 +125,11 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-# Clear sessions whenever the server restarts by storing them in local memory (RAM) instead of the database
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# # Clear sessions whenever the server restarts by storing them in local memory (RAM) instead of the database
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#     }
+# }

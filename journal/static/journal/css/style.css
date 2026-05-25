@@ -565,19 +565,27 @@ body {
    
 }
 
-/* Quill Content Fixes - Relying on Quill's Snow theme CSS */
 .entry-content-body.ql-editor {
-    padding: 1rem , 0;
+    font-family: "Delius", cursive; /* Change to your desired font */
+    font-weight: 300;
+    font-style: normal;
+    color: #1f2937; /* Change to your desired text color (e.g., a dark slate gray) */
+    line-height: 1.7; 
+    font-size: 20px;
 }
+
+/* If you want to target specific elements inside the content like paragraphs */
+.entry-content-body.ql-editor p {
+    color: #1f2937;
+    font-family: inherit;
+}
+
 
 .entry-content-body.ql-editor ul,
 .entry-content-body.ql-editor ol {
     list-style-type: none !important;
 }
 
-.entry-content-body.ql-editor p {
-    margin-bottom: 0.5rem;
-}
 
 /* Hamburger Menu Refinement */
 .action-dropdown {
