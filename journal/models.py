@@ -13,7 +13,7 @@ class JournalEntry(models.Model):
         ('angry', 'Angry'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=6)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='entries')
     content = models.TextField()
     mood = models.CharField(max_length=20, choices=MOOD_CHOICES, default='neutral')
     date = models.DateField(default=timezone.now)
@@ -41,7 +41,7 @@ class JournalImage(models.Model):
         return f"Image for {self.entry.date}"
 
 class Topic(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, default=6)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='topics')
     title = models.CharField(max_length=200)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,31 +1,44 @@
 {% extends 'journal/base.html' %}
 {% load static %}
 
-{% block title %}{% if object %}Edit Entry{% else %}New Entry{% endif %} | MyRecord{% endblock %}
+{% block title %}{% if object %}Edit Entry{% else %}Write Your Story{% endif %} | MyRecord{% endblock %}
 
 {% block content %}
 <div class="header-row">
     <div>
-        <h1 class="page-title">{% if object %}Edit Entry{% else %}Write Your Story{% endif %}</h1>
-        <p style="color: var(--text-dim);">
+        <h1 class="page-title">
+            {% if object %}Edit Your <span style="color: var(--electric-purple);">Reflection</span>
+            {% else %}Capture <span style="color: var(--electric-purple);">Today's Story</span>
+            {% endif %}
+        </h1>
+        <p class="page-subtitle">
+            <i class="fas fa-calendar-day" style="color: var(--electric-purple); margin-right: 0.4rem;"></i>
             {% if object %}
-                {{ object.date|date:"F d, Y" }}
+                {{ object.date|date:"l, F d, Y" }}
             {% elif form.date.value %}
-                {{ form.date.value|date:"F d, Y" }}
+                {{ form.date.value|date:"l, F d, Y" }}
             {% else %}
-                {{ today|date:"F d, Y" }}
+                {{ today|date:"l, F d, Y" }}
             {% endif %}
         </p>
     </div>
+    <div>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
 </div>
 
-<div class="form-card">
-    <form method="post" enctype="multipart/form-data" class="card">
+<div class="entry-container">
+    <form method="post" enctype="multipart/form-data" class="card" style="box-shadow: var(--shadow-md);">
         {% csrf_token %}
         <input type="hidden" name="date" value="{{ form.date.value|default_if_none:'' }}">
         
+        <!-- Mood Selection -->
         <div class="form-group">
-            <label class="form-label">How are you feeling today?</label>
+            <label class="form-label">
+                <i class="fas fa-sparkles" style="color: var(--electric-purple); margin-right: 0.4rem;"></i> How was your energy & mood today?
+            </label>
             <div class="mood-grid">
                 {% for value, label in form.fields.mood.choices %}
                 <label class="mood-option">
@@ -39,6 +52,7 @@
                             {% elif value == 'tired' %}😫
                             {% elif value == 'excited' %}🤩
                             {% elif value == 'angry' %}😡
+                            {% else %}✨
                             {% endif %}
                         </span>
                         <span class="mood-label">{{ label }}</span>
@@ -48,46 +62,62 @@
             </div>
         </div>
 
+        <!-- Quill Editor -->
         <div class="form-group">
-            <label class="form-label">Capture your thoughts</label>
+            <label class="form-label">
+                <i class="fas fa-pen-fancy" style="color: var(--electric-purple); margin-right: 0.4rem;"></i> Your journal notes & thoughts
+            </label>
             <div id="editor-container">
                 {{ form.content.value|safe|default_if_none:"" }}
             </div>
             <textarea name="content" id="hidden-content" style="display:none;"></textarea>
         </div>
 
-        <div class="media-pill-row">
-            <label class="media-pill {% if form.instance.pk and form.instance.audio %}has-file{% endif %}" for="input-voice">
-                <i class="fas fa-microphone"></i> {% if form.instance.pk and form.instance.audio %}Voice Note Attached{% else %}Voice Note{% endif %}
-                <input id="input-voice" type="file" name="audio" accept="audio/*" hidden>
+        <!-- Media Attachment Options -->
+        <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label">
+                <i class="fas fa-paperclip" style="color: var(--electric-purple); margin-right: 0.4rem;"></i> Media & Memories
             </label>
-            <label class="media-pill" for="input-photo">
-                <i class="fas fa-camera"></i> Photo
-                <input id="input-photo" type="file" name="images" multiple accept="image/*" hidden>
-            </label>
-            <label class="media-pill {% if form.instance.pk and form.instance.video %}has-file{% endif %}" for="input-video">
-                <i class="fas fa-video"></i> {% if form.instance.pk and form.instance.video %}Video Attached{% else %}Video{% endif %}
-                <input id="input-video" type="file" name="video" accept="video/*" hidden>
-            </label>
-        </div>
-        
-        {% if form.instance.pk and form.instance.images.all %}
-        <div class="existing-images" style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
-            {% for img in form.instance.images.all %}
-            <div class="image-preview" style="position: relative;">
-                <img src="{{ img.image.url }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #333;">
+            <div class="media-pill-row">
+                <label class="media-pill {% if form.instance.pk and form.instance.audio %}has-file{% endif %}" for="input-voice">
+                    <i class="fas fa-microphone"></i> 
+                    <span>{% if form.instance.pk and form.instance.audio %}Audio Attached{% else %}Attach Audio{% endif %}</span>
+                    <input id="input-voice" type="file" name="audio" accept="audio/*" hidden>
+                </label>
+                <label class="media-pill" for="input-photo">
+                    <i class="fas fa-camera"></i> 
+                    <span>Add Photos</span>
+                    <input id="input-photo" type="file" name="images" multiple accept="image/*" hidden>
+                </label>
+                <label class="media-pill {% if form.instance.pk and form.instance.video %}has-file{% endif %}" for="input-video">
+                    <i class="fas fa-video"></i> 
+                    <span>{% if form.instance.pk and form.instance.video %}Video Attached{% else %}Attach Video{% endif %}</span>
+                    <input id="input-video" type="file" name="video" accept="video/*" hidden>
+                </label>
             </div>
-            {% endfor %}
+            
+            {% if form.instance.pk and form.instance.images.all %}
+            <div class="existing-images" style="display: flex; gap: 0.8rem; margin-top: 1.2rem; flex-wrap: wrap;">
+                {% for img in form.instance.images.all %}
+                <div style="position: relative; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-subtle);">
+                    <img src="{{ img.image.url }}" style="width: 72px; height: 72px; object-fit: cover; display: block;">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div id="media-file-names" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.8rem; min-height:1.2rem;"></div>
         </div>
-        {% endif %}
 
-        <div id="media-file-names" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.4rem; min-height:1.2rem;"></div>
-
-        <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: center;">
-            <button type="submit" class="btn btn-primary" style=" justify-content: center; width: 300px; font-size: 18px;">
-                <i class="fas fa-save"></i> Save 
+        <!-- Actions & Autosave Status -->
+        <div style="display: flex; gap: 1rem; margin-top: 2.5rem; justify-content: flex-start; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 1.5rem; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-primary" style="min-width: 180px;">
+                <i class="fas fa-bookmark"></i> Save Reflection
             </button>
-            <a href="{% url 'dashboard' %}" class="btn" style="background: #222; color: #fff;">Cancel</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+            <div id="autosave-status-wrapper" style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
+                <span id="autosave-indicator" style="font-size: 0.88rem; color: var(--sand-beige-muted); font-weight: 500;"></span>
+            </div>
         </div>
     </form>
 </div>
@@ -104,21 +134,21 @@
                 [{ 'size': ['small', false, 'large', 'huge'] }],
                 ['bold', 'italic', 'underline', 'strike'],
                 [{ 'color': [] }, { 'background': [] }],
-                [{ 'list': 'ordered'}, { 'list': 'bullet'}, { 'list': 'check' }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet'}],
                 ['clean']
             ]
         },
-        placeholder: 'Start writing your story...'
+        placeholder: 'What happened today? Write freely...'
     });
 
-    // Handle form submission
+    // Form submission sync
     const form = document.querySelector('form.card');
     form.onsubmit = function() {
         const content = document.querySelector('#hidden-content');
         content.value = quill.root.innerHTML;
     };
 
-    // Handle file selection display
+    // File preview
     const fileInputs = document.querySelectorAll('input[type="file"]');
     const fileNameDisplay = document.getElementById('media-file-names');
     
@@ -150,24 +180,14 @@
 
     // Autosave functionality
     let autosaveTimeout;
-    const autosaveIndicator = document.createElement('span');
-    autosaveIndicator.style.fontSize = '0.9rem';
-    autosaveIndicator.style.color = '#aaa';
-    autosaveIndicator.style.marginLeft = '1rem';
-    autosaveIndicator.style.display = 'none';
-    autosaveIndicator.style.fontWeight = '500';
-    document.querySelector('.btn-primary').parentElement.appendChild(autosaveIndicator);
+    const autosaveIndicator = document.getElementById('autosave-indicator');
 
     function showAutosaveStatus(text, duration = 3000) {
-        autosaveIndicator.textContent = text;
-        autosaveIndicator.style.display = 'inline';
+        autosaveIndicator.innerHTML = text;
+        autosaveIndicator.style.opacity = '1';
         if (duration) {
             setTimeout(() => {
-                autosaveIndicator.style.opacity = '0';
-                setTimeout(() => {
-                    autosaveIndicator.style.display = 'none';
-                    autosaveIndicator.style.opacity = '1';
-                }, 500);
+                autosaveIndicator.style.opacity = '0.5';
             }, duration);
         }
     }
@@ -194,9 +214,7 @@
 
         if (!files && (!content || content === '<p><br></p>')) return;
 
-        autosaveIndicator.textContent = 'Saving...';
-        autosaveIndicator.style.display = 'inline';
-        autosaveIndicator.style.opacity = '1';
+        showAutosaveStatus('<i class="fas fa-spinner fa-spin"></i> Saving...');
 
         try {
             let body;
@@ -226,36 +244,31 @@
                 method: 'POST',
                 headers: headers,
                 body: body,
-                keepalive: true,
             });
             const result = await response.json();
             if (result.status === 'success') {
-                showAutosaveStatus('✓ Autosaved');
+                showAutosaveStatus('<i class="fas fa-check" style="color:#8b5cf6;"></i> Autosaved');
                 if (result.id) {
                     form.action = `/entry/${result.id}/edit/`;
                 }
-                // Clear file inputs after upload to avoid re-uploading the same files on text change or final save
                 if (files) {
                     for (const key in files) {
                         const input = document.querySelector(`input[name="${key}"]`);
                         if (input) input.value = '';
                     }
-                    // Optional: update the UI to show they are "staged" or "uploaded"
-                    // The has-file classes will be updated on next page load, 
-                    // but we can also update them here if we want.
                 }
             } else {
-                showAutosaveStatus('✗ Save failed');
+                showAutosaveStatus('<i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Save failed');
             }
         } catch (error) {
-            showAutosaveStatus('✗ Save failed');
+            showAutosaveStatus('<i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Save failed');
             console.error('Autosave error:', error);
         }
     }
 
     quill.on('text-change', () => {
         clearTimeout(autosaveTimeout);
-        autosaveTimeout = setTimeout(() => performAutosave(), 3000);
+        autosaveTimeout = setTimeout(() => performAutosave(), 2500);
     });
 
     document.querySelectorAll('input[name="mood"]').forEach(radio => {
@@ -282,45 +295,4 @@
         }
     });
 </script>
-<style>
-    /* Quill Custom Styling to match dark theme */
-    #editor-container {
-        width: 100%;
-        max-width: 840px;
-        background: #111;
-        margin-bottom: 1rem;
-    }
-    .ql-toolbar.ql-snow {
-        border: 1px solid #333;
-        background: #1a1a1a;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-        display: flex;
-        flex-wrap: wrap;
-        width: 840px;
-    }
-    .ql-container.ql-snow {
-        border: 1px solid #333;
-        border-bottom-left-radius: 12px;
-        border-bottom-right-radius: 12px;
-        font-family: 'Inter', sans-serif;
-        font-size: 1.1rem;
-        color: #fff;
-    }
-    .ql-editor {
-        min-height: 400px;
-        line-height: 1.8;
-    }
-    .ql-snow .ql-stroke { stroke: #fff !important; }
-    .ql-snow .ql-fill { fill: #fff !important; }
-    .ql-snow .ql-picker { color: #fff !important; }
-    .ql-snow .ql-picker-options { background-color: #222 !important; border: 1px solid #444 !important; color: #fff !important; }
-    .ql-editor.ql-blank::before { color: #555 !important; font-style: normal; }
-    
-    .media-pill.has-file {
-        background: rgba(255, 107, 0, 0.2) !important;
-        border-color: var(--primary-color) !important;
-        color: #fff !important;
-    }
-</style>
 {% endblock %}

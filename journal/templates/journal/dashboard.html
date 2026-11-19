@@ -6,32 +6,33 @@
 {% block content %}
 <div class="header-row">
     <div>
-        <h1 class="page-title" style="font-size: 2.5rem; letter-spacing: -1px;">
-            <span style="color: var(--primary-color);">{{ view_date|date:"F" }}</span>
-            <span style="color: #fff;">{{ view_date|date:"Y" }}</span>
+        <h1 class="page-title">
+            <span style="color: var(--sand-beige);">{{ view_date|date:"F" }}</span>
+            <span style="color: var(--electric-purple);">{{ view_date|date:"Y" }}</span>
         </h1>
-        <p style="color: var(--text-dim); font-weight: 500; margin-top: 0.2rem;">Your Journal Journey</p>
+        <p class="page-subtitle">Your personal daily sanctuary & life reflections</p>
     </div>
-    <div style="display: flex; gap: 12px; align-items: center;">
-        <div style="background: #111; border-radius: 12px; padding: 4px; display: flex; gap: 4px;">
-            <a href="?month={{ prev_month }}&year={{ prev_year }}" class="btn"
-                style="background: transparent; color: var(--text-dim); padding: 0.6rem 1rem;"><i
-                    class="fas fa-chevron-left"></i></a>
-            <a href="?month={{ next_month }}&year={{ next_year }}" class="btn"
-                style="background: transparent; color: var(--text-dim); padding: 0.6rem 1rem;"><i
-                    class="fas fa-chevron-right"></i></a>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <!-- new- diary -->
-            <a href="{% url 'entry_create' %}" class="btn btn-primary"
-                style="box-shadow: 0 8px 20px rgba(162, 123, 92, 0.2);">
-                <i class="fas fa-plus"></i>
-                <span>New Diary</span>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <!-- Month Navigation -->
+        <div class="calendar-nav-buttons">
+            <a href="?month={{ prev_month }}&year={{ prev_year }}" class="calendar-nav-btn" title="Previous Month">
+                <i class="fas fa-chevron-left"></i>
             </a>
-            <!-- new topic -->
-            <a href="{% url 'topic_create' %}" class="btn btn-primary"
-                style="box-shadow: 0 8px 20px rgba(162, 123, 92, 0.2);">
-                <i class="fas fa-plus"></i>
+            <span style="display: flex; align-items: center; padding: 0 0.5rem; font-size: 0.85rem; font-weight: 700; color: var(--sand-beige);">
+                {{ view_date|date:"M Y" }}
+            </span>
+            <a href="?month={{ next_month }}&year={{ next_year }}" class="calendar-nav-btn" title="Next Month">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <a href="{% url 'entry_create' %}" class="btn btn-primary">
+                <i class="fas fa-feather"></i>
+                <span>{% if today_entry %}Edit Today{% else %}Write Today{% endif %}</span>
+            </a>
+            <a href="{% url 'topic_create' %}" class="btn btn-secondary">
+                <i class="fas fa-lightbulb"></i>
                 <span>New Topic</span>
             </a>
         </div>
@@ -40,36 +41,56 @@
 
 <!-- Stats Grid -->
 <div class="stats-grid">
-    <div class="card">
-        <div class="stat-label">Total Entries</div>
+    <div class="stat-card">
+        <div class="stat-label">
+            <i class="fas fa-book-bookmark"></i> Total Entries
+        </div>
         <div class="stat-value">{{ total_entries }}</div>
-        <div style="color: var(--primary-color); font-size: 0.9rem;">
-            <i class="fas fa-chart-line"></i> Lifetime Activity
+        <div class="stat-footer">
+            <i class="fas fa-chart-line" style="color: var(--electric-purple);"></i> Lifetime Memories Recorded
         </div>
     </div>
-    <div class="card" style="grid-column: span 2;">
-        <div class="stat-label">Mood Distribution</div>
-        <div style="height: 120px;">
+
+    <div class="card" style="grid-column: span 2; display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="stat-label" style="display: flex; justify-content: space-between; align-items: center;">
+            <span><i class="fas fa-face-smile"></i> Mood Distribution</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: none;">Emotional Snapshot</span>
+        </div>
+        <div style="height: 140px; margin-top: 0.5rem;">
             <canvas id="moodChart"></canvas>
         </div>
     </div>
 </div>
 
 <!-- Calendar Section -->
-<div class="calendar-section">
+<div class="calendar-card">
+    <div class="calendar-header-strip">
+        <div class="calendar-month-title">
+            <i class="fas fa-calendar-days" style="color: var(--electric-purple);"></i>
+            <span>{{ view_date|date:"F Y" }} Calendar</span>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--sand-beige-muted); display: flex; gap: 1rem; align-items: center;">
+            <span style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--electric-purple); display: inline-block;"></span> Today
+            </span>
+            <span style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--electric-purple); display: inline-block;"></span> Recorded
+            </span>
+        </div>
+    </div>
+
     <div class="calendar-grid">
         {% for day in month_days %}
         {% with entry=entries_by_date|get_item:day %}
-        <div class="calendar-day {% if day == today %}today{% endif %}" style="width: 80px; height: 80px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                <span class="day-number" style="font-size: 0.8rem;">{{ day.day }}</span>
-                <span class="day-weekday"
-                    style="font-size: 0.6rem; color: var(--primary-color); font-weight: 800; opacity: 0.7;">
-                    {{day|date:'D'|slice:":1" }}</span>
+        <div class="calendar-day {% if day == today %}today{% endif %} {% if entry %}has-entry{% endif %}">
+            <div class="day-header-info">
+                <span class="day-number">{{ day.day }}</span>
+                <span class="day-weekday">{{ day|date:'D'|slice:":3" }}</span>
             </div>
+
             {% if entry %}
-            <a href="{% url 'entry_detail' entry.pk %}" style="text-decoration: none;">
-                <div class="day-mood" style="font-size: 1.2rem;">
+            <a href="{% url 'entry_detail' entry.pk %}" style="text-decoration: none; display: flex; flex-direction: column; align-items: center; flex: 1; justify-content: center;">
+                <div class="day-mood">
                     {% if entry.mood == 'happy' %}😊
                     {% elif entry.mood == 'sad' %}😢
                     {% elif entry.mood == 'neutral' %}😐
@@ -77,13 +98,15 @@
                     {% elif entry.mood == 'tired' %}😫
                     {% elif entry.mood == 'excited' %}🤩
                     {% elif entry.mood == 'angry' %}😡
+                    {% else %}✨
                     {% endif %}
                 </div>
                 <div class="day-entry-indicator"></div>
             </a>
             {% else %}
-            <a href="{% url 'entry_create' %}?date={{ day|date:'Y-m-d' }}"
-                style="display: block; width: 100%; height: 100%;"></a>
+            <a href="{% url 'entry_create' %}?date={{ day|date:'Y-m-d' }}" class="empty-day-cta" title="Add entry for {{ day|date:'M d' }}">
+                <i class="fas fa-plus"></i>
+            </a>
             {% endif %}
         </div>
         {% endwith %}
@@ -95,35 +118,51 @@
 {% block extra_js %}
 <script>
     const ctx = document.getElementById('moodChart').getContext('2d');
-    const moodLabels = {{ mood_labels_json| safe }};
-    const moodCounts = {{ mood_counts_json| safe }};
+    const moodLabels = {{ mood_labels_json|safe }};
+    const moodCounts = {{ mood_counts_json|safe }};
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 140);
+    gradient.addColorStop(0, '#8b5cf6');
+    gradient.addColorStop(1, 'rgba(139, 92, 246, 0.2)');
 
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: moodLabels,
+            labels: moodLabels.length > 0 ? moodLabels : ['No data'],
             datasets: [{
-                label: 'Days',
-                data: moodCounts,
-                backgroundColor: '#ff6b00',
+                label: 'Entries',
+                data: moodCounts.length > 0 ? moodCounts : [0],
+                backgroundColor: gradient,
+                borderColor: '#8b5cf6',
+                borderWidth: 1,
                 borderRadius: 8,
-                barThickness: 30,
+                barThickness: 24,
             }]
         },
         options: {
+            responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false }
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#14291c',
+                    titleColor: '#e8dcc4',
+                    bodyColor: '#ffffff',
+                    borderColor: 'rgba(232, 220, 196, 0.2)',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    padding: 10
+                }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#333' },
-                    ticks: { color: '#a0a0a0' }
+                    grid: { color: 'rgba(232, 220, 196, 0.08)' },
+                    ticks: { color: '#95a39a', stepSize: 1, font: { family: 'Plus Jakarta Sans' } }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#a0a0a0' }
+                    ticks: { color: '#e8dcc4', font: { family: 'Plus Jakarta Sans', weight: '600' } }
                 }
             }
         }

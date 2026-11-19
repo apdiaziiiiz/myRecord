@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Count
@@ -12,6 +12,7 @@ from django.utils import timezone
 from .models import JournalEntry, JournalImage, Topic
 from .forms import JournalEntryForm, TopicForm
 import datetime
+import calendar
 import json
 
 def signup_view(request):
@@ -26,6 +27,11 @@ def signup_view(request):
     else:
         form = UserCreationForm()
     return render(request, 'journal/auth/signup.html', {'form': form})
+
+def logout_view(request):
+    if request.user.is_authenticated:
+        logout(request)
+    return redirect('login')
 
 class DashboardView(LoginRequiredMixin, ListView):
     model = JournalEntry
@@ -74,14 +80,15 @@ class DashboardView(LoginRequiredMixin, ListView):
         # Analytics: Entry frequency (days with entries)
         total_entries = user_entries.count()
         
-        # Calendar logic: Only current month days
-        import calendar
+        # Calendar logic: All days of current month
         cal = calendar.Calendar(firstweekday=6)
-        # Get all days in the weeks that contain the month, then filter for current month
         all_days = [day for week in cal.monthdatescalendar(year, month) for day in week if day.month == month]
         
         # Map entries to dates for the calendar
         entries_by_date = {entry.date: entry for entry in user_entries}
+        
+        # Check if user has written an entry for today
+        today_entry = entries_by_date.get(today)
         
         context.update({
             'mood_labels_json': json.dumps(mood_labels),
@@ -96,6 +103,7 @@ class DashboardView(LoginRequiredMixin, ListView):
             'next_month': next_month,
             'next_year': next_year,
             'today': today,
+            'today_entry': today_entry,
             'view_date': datetime.date(year, month, 1),
         })
         return context

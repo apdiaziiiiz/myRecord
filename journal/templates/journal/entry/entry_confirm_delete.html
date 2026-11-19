@@ -3,25 +3,26 @@
 {% block title %}Delete Entry | MyRecord{% endblock %}
 
 {% block content %}
-<div class="header-row">
-    <h1 class="page-title">Delete Entry</h1>
-</div>
-
-<div class="form-card">
-    <div class="card" style="text-align: center; padding: 3rem;">
-        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: #a30000; margin-bottom: 1.5rem;"></i>
-        <h2 style="margin-bottom: 1rem;">Are you sure?</h2>
-        <p style="color: var(--text-dim); margin-bottom: 2rem;">
-            You are about to delete your entry for <strong>{{ object.date|date:"F d, Y" }}</strong>. This action cannot be undone.
+<div class="entry-container" style="max-width: 600px; margin: 4rem auto;">
+    <div class="card" style="text-align: center; padding: 3.5rem 2rem; border-color: rgba(220, 38, 38, 0.3);">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(220, 38, 38, 0.15); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; border: 1px solid rgba(220, 38, 38, 0.3);">
+            <i class="fas fa-triangle-exclamation" style="font-size: 2.2rem; color: #ef4444;"></i>
+        </div>
+        
+        <h2 style="font-size: 2rem; font-weight: 800; color: var(--sand-beige); margin-bottom: 0.8rem;">Delete Reflection?</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2.2rem; font-size: 1rem; line-height: 1.6;">
+            Are you sure you want to permanently delete your entry for <strong style="color: var(--text-primary);">{{ object.date|date:"F d, Y" }}</strong>? This memory cannot be recovered.
         </p>
         
         <form method="post">
             {% csrf_token %}
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <button type="submit" class="btn" style="background: #a30000; color: #fff;">
-                    <i class="fas fa-trash"></i> Yes, Delete
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-can"></i> Yes, Delete Entry
                 </button>
-                <a href="{% url 'entry_detail' object.pk %}" class="btn" style="background: #222; color: #fff;">Cancel</a>
+                <a href="{% url 'entry_detail' object.pk %}" class="btn btn-secondary">
+                    Cancel
+                </a>
             </div>
         </form>
     </div>

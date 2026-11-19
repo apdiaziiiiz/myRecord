@@ -4,67 +4,66 @@
 {% block title %}Topics | MyRecord{% endblock %}
 
 {% block content %}
-<div class="header-row" style="margin-bottom: 2rem;">
+<div class="header-row">
     <div>
-        <h1 class="page-title" style="font-size: 2.5rem; letter-spacing: -1px; color: #fff;">
-            My <span style="color: var(--primary-color);">Topics</span>
+        <h1 class="page-title">
+            My <span style="color: var(--electric-purple);">Topics & Goals</span>
         </h1>
-        <p style="color: var(--text-dim); font-weight: 500; margin-top: 0.2rem;">Thoughts, goals, and personal reflections.</p>
+        <p class="page-subtitle">Ideas, deep reflections, and ongoing inspirations</p>
     </div>
     <div style="display: flex; gap: 10px;">
-        <a href="{% url 'topic_create' %}" class="btn btn-primary" style="box-shadow: 0 8px 20px rgba(255, 107, 0, 0.2);">
+        <a href="{% url 'topic_create' %}" class="btn btn-primary">
             <i class="fas fa-plus"></i>
-            <span>New Topic</span>
+            <span>Create Topic</span>
         </a>
     </div>
 </div>
 
-<div class="topics-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+<div class="topics-grid">
     {% for topic in topics %}
-    <div class="card" style="height: 100%; transition: all 0.3s ease; display: flex; flex-direction: column; height: 190px;">
+    <div class="topic-card">
         <a href="{% url 'topic_detail' topic.pk %}" style="text-decoration: none; color: inherit; flex-grow: 1; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-grow: 1;">
-                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--primary-color); margin: 0; padding-top: 10px;">{{ topic.title }}</h3>
+            <div class="topic-card-title">{{ topic.title }}</div>
+            <div class="topic-card-snippet">
+                {{ topic.content|striptags|truncatewords:20 }}
             </div>
         </a>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: auto;">
-            <span style="font-size: 0.8rem; color: var(--text-dim); font-weight: 600;">
-                <i class="far fa-calendar-alt" style="margin-right: 5px;"></i> {{ topic.created_at|date:"M d, Y" }}
+        <div class="topic-card-footer">
+            <span class="topic-card-date">
+                <i class="far fa-calendar-alt"></i> {{ topic.created_at|date:"M d, Y" }}
             </span>
             
             <div class="action-dropdown" style="position: relative; top: auto; right: auto;">
-                <button type="button" class="hamburger-btn topic-hamburger" data-topic-id="{{ topic.pk }}" title="Menu">
-                    <i class="fas fa-bars"></i>
+                <button type="button" class="hamburger-btn topic-hamburger" data-topic-id="{{ topic.pk }}" title="Options" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                    <i class="fas fa-ellipsis-vertical"></i>
                 </button>
-                <div class="dropdown-menu topic-menu" id="menu-{{ topic.pk }}" style="top: auto; bottom: 100%; right: 0; margin-bottom: 8px;">
+                <div class="dropdown-menu topic-menu" id="menu-{{ topic.pk }}" style="top: auto; bottom: calc(100% + 6px); right: 0;">
                     <a href="{% url 'topic_update' topic.pk %}" class="dropdown-item">
-                        <i class="fas fa-edit"></i> Edit 
+                        <i class="fas fa-pen-to-square"></i> Edit
                     </a>
                     <a href="{% url 'topic_delete' topic.pk %}" class="dropdown-item delete">
-                        <i class="fas fa-trash"></i> Delete 
+                        <i class="fas fa-trash-can"></i> Delete
                     </a>
                 </div>
             </div>
         </div>
     </div>
     {% empty %}
-    <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: var(--card-bg); border-radius: 20px; border: 1px dashed var(--border-color);">
-        <i class="fa-regular fa-lightbulb" style="font-size: 3rem; color: var(--text-dim); margin-bottom: 1rem;"></i>
-        <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 0.5rem;">No topics yet</h3>
-        <p style="color: var(--text-dim); margin-bottom: 1.5rem;">Start writing your goals, reflections, or ideas.</p>
-        <a href="{% url 'topic_create' %}" class="btn btn-primary">Create Your First Topic</a>
+    <div style="grid-column: 1 / -1; text-align: center; padding: 4.5rem 2rem; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-subtle);">
+        <div style="width: 70px; height: 70px; border-radius: 50%; background: var(--forest-green-surface); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; border: 1px solid var(--border-subtle);">
+            <i class="fas fa-lightbulb" style="font-size: 2rem; color: var(--electric-purple);"></i>
+        </div>
+        <h3 style="color: var(--sand-beige); font-size: 1.4rem; font-weight: 700; margin-bottom: 0.6rem;">No Topics Yet</h3>
+        <p style="color: var(--text-muted); max-width: 440px; margin: 0 auto 2rem auto; font-size: 0.95rem;">
+            Create personalized focus spaces for goals, projects, book summaries, or recurring life themes.
+        </p>
+        <a href="{% url 'topic_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create First Topic
+        </a>
     </div>
     {% endfor %}
 </div>
-
-<style>
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        border-color: var(--primary-color);
-    }
-</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -79,12 +78,13 @@
                 const targetId = this.getAttribute('data-topic-id');
                 const menu = document.getElementById('menu-' + targetId);
                 
-                // Close all other menus
                 document.querySelectorAll('.topic-menu').forEach(m => {
                     if (m !== menu) m.classList.remove('show');
                 });
                 
-                menu.classList.toggle('show');
+                if (menu) {
+                    menu.classList.toggle('show');
+                }
             });
         });
 

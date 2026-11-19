@@ -6,7 +6,7 @@ urlpatterns = [
     # Auth URLs
     path('', auth_views.LoginView.as_view(template_name='journal/auth/login.html', redirect_authenticated_user=True), name='login'),
     path('signup/', views.signup_view, name='signup'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', views.logout_view, name='logout'),
     
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('entry/new/', views.EntryCreateView.as_view(), name='entry_create'),
@@ -24,4 +24,3 @@ urlpatterns = [
     path('entry/autosave/', views.EntryAutosaveView.as_view(), name='entry_autosave'),
     path('topics/autosave/', views.TopicAutosaveView.as_view(), name='topic_autosave'),
 ]
-

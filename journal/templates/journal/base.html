@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MyRecord {% endblock %}</title>
+    <title>{% block title %}MyRecord - Daily Life Journal{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Delius&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'journal/css/style.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,55 +18,62 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <a href="{% url 'dashboard' %}" class="logo">
-                <i class="fas fa-book-open"></i>
+                <i class="fas fa-feather-pointed"></i>
                 <span>MY<span>RECORD</span></span>
             </a>
             
-            <nav>
+            <nav style="flex: 1;">
                 <ul class="nav-menu">
                     <li class="nav-item">
                         <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                            <i class="fas fa-th-large"></i>
+                            <i class="fas fa-compass"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     
                     <li class="nav-item">
                         <a href="{% url 'topic_list' %}" class="nav-link {% if 'topics' in request.path %}active{% endif %}">
-                            <i class="fa-regular fa-lightbulb"></i>
+                            <i class="fas fa-lightbulb"></i>
                             <span>Topics</span>
                         </a>
                     </li>
+
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="fas fa-search"></i>
-                            <span>Diarly History</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="" class="nav-link">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
+                        <a href="{% url 'entry_create' %}" class="nav-link {% if request.resolver_match.url_name == 'entry_create' %}active{% endif %}">
+                            <i class="fas fa-pen-nib"></i>
+                            <span>Write Entry</span>
                         </a>
                     </li>
                 </ul>
             </nav>
             
-            <div style="margin-top: auto;">
+            <div style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);">
+                <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem; padding: 0.3rem 0.5rem;">
+                    <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--electric-purple); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 0.95rem; box-shadow: 0 2px 8px var(--electric-purple-glow);">
+                        {{ request.user.username|make_list|first|upper }}
+                    </div>
+                    <div style="overflow: hidden;">
+                        <div style="color: var(--sand-beige); font-weight: 700; font-size: 0.9rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                            {{ request.user.username }}
+                        </div>
+                        <div style="color: var(--text-muted); font-size: 0.75rem;">Active Journal</div>
+                    </div>
+                </div>
+
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
-                    <button type="submit" class="nav-link" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer; color: inherit; font: inherit; padding: 0.8rem 1rem;">
-                        <i class="fas fa-sign-out-alt"></i>
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-arrow-right-from-bracket"></i>
                         <span>Logout</span>
                     </button>
                 </form>
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <main class="main-content">
             {% block content %}{% endblock %}
         </main>

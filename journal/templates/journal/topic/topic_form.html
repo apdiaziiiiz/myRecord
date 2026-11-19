@@ -4,52 +4,60 @@
 {% block title %}{% if object %}Edit Topic{% else %}New Topic{% endif %} | MyRecord{% endblock %}
 
 {% block content %}
-
-<div class="form-card">
-
-    <div class="header-row">
-        <h1 class="page-title">{% if object %}Edit{% else %}New{% endif %} Topic</h1>
+<div class="header-row">
+    <div>
+        <h1 class="page-title">{% if object %}Edit <span style="color: var(--electric-purple);">Topic</span>{% else %}New <span style="color: var(--electric-purple);">Topic</span>{% endif %}</h1>
+        <p class="page-subtitle">Dedicate thoughts, reflections, or goals to a focused subject</p>
     </div>
+    <div>
+        <a href="{% url 'topic_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> All Topics
+        </a>
+    </div>
+</div>
 
-    <form method="post" class="card">
+<div class="entry-container">
+    <form method="post" class="card" style="box-shadow: var(--shadow-md);">
         {% csrf_token %}
 
         <div class="form-group">
-            <label class="form-label">Topic </label>
+            <label class="form-label">
+                <i class="fas fa-tag" style="color: var(--electric-purple); margin-right: 0.4rem;"></i> Topic Title
+            </label>
             {{ form.title }}
             {% if form.title.errors %}
-            <div style="color: #ff4444; font-size: 0.9rem; margin-top: 0.5rem;">
+            <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem;">
                 {{ form.title.errors }}
             </div>
             {% endif %}
-
         </div>
 
-        <div class="form-group" style="margin-bottom: 2rem">
-            <label class="form-label">Capture your thoughts</label>
+        <div class="form-group" style="margin-bottom: 2rem;">
+            <label class="form-label">
+                <i class="fas fa-pen-nib" style="color: var(--electric-purple); margin-right: 0.4rem;"></i> Thoughts & Description
+            </label>
             <div id="editor-container">
                 {{ form.content.value|safe|default_if_none:"" }}
             </div>
             <textarea name="content" id="hidden-content" style="display:none;"></textarea>
 
             {% if form.content.errors %}
-            <div style="color: #ff4444; font-size: 0.9rem; margin-top: 0.5rem;">
+            <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem;">
                 {{ form.content.errors }}
             </div>
             {% endif %}
         </div>
 
-
-
-        <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: center;">
-            <button type="submit" class="btn btn-primary"
-                style=" justify-content: center; width: 300px; font-size: 18px;">
-                <i class="fas fa-save"></i> Save
+        <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-start; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 1.5rem; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-primary" style="min-width: 180px;">
+                <i class="fas fa-bookmark"></i> Save Topic
             </button>
-            <a href="{% url 'dashboard' %}" class="btn" style="background: #222; color: #fff;">Cancel</a>
+            <a href="{% url 'topic_list' %}" class="btn btn-secondary">Cancel</a>
+            <div style="margin-left: auto;">
+                <span id="topic-autosave-indicator" style="font-size: 0.88rem; color: var(--sand-beige-muted); font-weight: 500;"></span>
+            </div>
         </div>
-</div>
-</form>
+    </form>
 </div>
 {% endblock %}
 
@@ -64,11 +72,11 @@
                 [{ 'size': ['small', false, 'large', 'huge'] }],
                 ['bold', 'italic', 'underline', 'strike'],
                 [{ 'color': [] }, { 'background': [] }],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                 ['clean']
             ]
         },
-        placeholder: 'Start writing your story...'
+        placeholder: 'Capture the details, visions, and steps for this topic...'
     });
 
     // Handle form submission
@@ -81,25 +89,14 @@
     // Autosave functionality
     let autosaveTimeout;
     let currentTopicId = {% if object %}{{ object.pk }}{% else %}null{% endif %};
-    
-    const autosaveIndicator = document.createElement('span');
-    autosaveIndicator.style.fontSize = '0.9rem';
-    autosaveIndicator.style.color = '#aaa';
-    autosaveIndicator.style.marginLeft = '1rem';
-    autosaveIndicator.style.display = 'none';
-    autosaveIndicator.style.fontWeight = '500';
-    document.querySelector('.btn-primary').parentElement.appendChild(autosaveIndicator);
+    const autosaveIndicator = document.getElementById('topic-autosave-indicator');
 
     function showAutosaveStatus(text, duration = 3000) {
-        autosaveIndicator.textContent = text;
-        autosaveIndicator.style.display = 'inline';
+        autosaveIndicator.innerHTML = text;
+        autosaveIndicator.style.opacity = '1';
         if (duration) {
             setTimeout(() => {
-                autosaveIndicator.style.opacity = '0';
-                setTimeout(() => {
-                    autosaveIndicator.style.display = 'none';
-                    autosaveIndicator.style.opacity = '1';
-                }, 500);
+                autosaveIndicator.style.opacity = '0.5';
             }, duration);
         }
     }
@@ -121,14 +118,12 @@
 
     async function performAutosave() {
         const titleInput = document.querySelector('input[name="title"]');
-        const title = titleInput ? titleInput.value : '';
+        const title = titleInput ? titleInput.value.trim() : '';
         const content = quill.root.innerHTML;
 
         if (!title && (!content || content === '<p><br></p>')) return;
 
-        autosaveIndicator.textContent = 'Saving...';
-        autosaveIndicator.style.display = 'inline';
-        autosaveIndicator.style.opacity = '1';
+        showAutosaveStatus('<i class="fas fa-spinner fa-spin"></i> Saving...');
 
         try {
             const response = await fetch('{% url "topic_autosave" %}', {
@@ -137,39 +132,39 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCookie('csrftoken'),
                 },
-                body: JSON.stringify({ id: currentTopicId, title, content }),
-                keepalive: true,
+                body: JSON.stringify({
+                    id: currentTopicId,
+                    title: title,
+                    content: content
+                })
             });
+
             const result = await response.json();
             if (result.status === 'success') {
-                showAutosaveStatus('✓ Autosaved');
+                showAutosaveStatus('<i class="fas fa-check" style="color:#8b5cf6;"></i> Autosaved');
                 if (result.id && !currentTopicId) {
                     currentTopicId = result.id;
+                    form.action = `/topics/${result.id}/edit/`;
                 }
-                if (currentTopicId) {
-                    form.action = `/topics/${currentTopicId}/edit/`;
-                }
-            } else if (result.status === 'ignored') {
-                autosaveIndicator.style.display = 'none';
-            } else {
-                showAutosaveStatus('✗ Save failed');
+            } else if (result.status !== 'ignored') {
+                showAutosaveStatus('<i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Save failed');
             }
         } catch (error) {
-            showAutosaveStatus('✗ Save failed');
+            showAutosaveStatus('<i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> Save failed');
             console.error('Autosave error:', error);
         }
     }
 
     quill.on('text-change', () => {
         clearTimeout(autosaveTimeout);
-        autosaveTimeout = setTimeout(performAutosave, 3000);
+        autosaveTimeout = setTimeout(performAutosave, 2500);
     });
 
     const titleInput = document.querySelector('input[name="title"]');
     if (titleInput) {
         titleInput.addEventListener('input', () => {
             clearTimeout(autosaveTimeout);
-            autosaveTimeout = setTimeout(performAutosave, 3000);
+            autosaveTimeout = setTimeout(performAutosave, 1500);
         });
     }
 
@@ -179,68 +174,4 @@
         }
     });
 </script>
-<style>
-    /* Quill Custom Styling to match dark theme */
-    #editor-container {
-        width: 100%;
-        max-width: 840px;
-        background: #111;
-        margin-bottom: 1rem;
-    }
-
-    .ql-toolbar.ql-snow {
-        border: 1px solid #333;
-        background: #1a1a1a;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-        display: flex;
-        flex-wrap: wrap;
-        width: 840px;
-    }
-
-    .ql-container.ql-snow {
-        border: 1px solid #333;
-        border-bottom-left-radius: 12px;
-        border-bottom-right-radius: 12px;
-        font-family: 'Inter', sans-serif;
-        font-size: 1.1rem;
-        color: #fff;
-    }
-
-    .ql-editor {
-        min-height: 400px;
-        line-height: 1.8;
-    }
-
-    .ql-snow .ql-stroke {
-        stroke: #fff !important;
-    }
-
-    .ql-snow .ql-fill {
-        fill: #fff !important;
-    }
-
-    .ql-snow .ql-picker {
-        color: #fff !important;
-    }
-
-    .ql-snow .ql-picker-options {
-        background-color: #222 !important;
-        border: 1px solid #444 !important;
-        color: #fff !important;
-    }
-
-    .ql-editor.ql-blank::before {
-        color: #555 !important;
-        font-style: normal;
-    }
-        /* checkbox color */
-.ql-editor li[data-list="checked"] > .ql-ui {
-    color: #4CAF50 !important;
-}
-
-.ql-editor li[data-list="unchecked"] > .ql-ui {
-    color: #ff6b6b !important;
-}
-</style>
 {% endblock %}

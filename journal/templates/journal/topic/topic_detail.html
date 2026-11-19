@@ -1,7 +1,7 @@
 {% extends 'journal/base.html' %}
 {% load static %}
 
-{% block title %}Topic Details | MyRecord{% endblock %}
+{% block title %}{{ topic.title }} | MyRecord{% endblock %}
 
 {% block content %}
 <div class="entry-hero" style="background-image: url('{% static 'journal/img/nature.jpg' %}');">
@@ -9,38 +9,55 @@
 </div>
 
 <div class="entry-container">
-    <div class="entry-header">
+    <div class="entry-header-card">
         <!-- Date Badge -->
         <div class="date-badge">
-            <div class="month">{{topic.created_at|date:"M"}}</div>
-            <div class="day">{{topic.created_at|date:"d"}}</div>
-            <div class="year">{{topic.created_at|date:"Y"}}</div>
-           
+            <div class="month">{{ topic.created_at|date:"M" }}</div>
+            <div class="day">{{ topic.created_at|date:"d" }}</div>
+            <div class="year">{{ topic.created_at|date:"Y" }}</div>
         </div>
 
         <!-- Hamburger Actions -->
         <div class="action-dropdown">
-            <button class="hamburger-btn" id="hamburgerBtn" title="Menu">
-                <i class="fas fa-bars"></i>
+            <button class="hamburger-btn" id="hamburgerBtn" title="Options">
+                <i class="fas fa-ellipsis-vertical"></i>
             </button>
             <div class="dropdown-menu" id="dropdownMenu">
                 <a href="{% url 'topic_update' topic.pk %}" class="dropdown-item">
-                    <i class="fas fa-edit"></i> Edit 
+                    <i class="fas fa-pen-to-square"></i> Edit Topic
                 </a>
                 <a href="{% url 'topic_delete' topic.pk %}" class="dropdown-item delete">
-                    <i class="fas fa-trash"></i> Delete 
+                    <i class="fas fa-trash-can"></i> Delete Topic
                 </a>
             </div>
         </div>
 
-        
+        <!-- Title -->
+        <div class="entry-title-row" style="margin-bottom: 1.5rem;">
+            <div>
+                <h1 class="page-title" style="font-size: 2.2rem; color: var(--sand-beige);">{{ topic.title }}</h1>
+                <p style="color: var(--sand-beige-muted); font-size: 0.95rem; margin-top: 0.3rem;">
+                    <i class="far fa-calendar-alt" style="color: var(--electric-purple); margin-right: 0.4rem;"></i>
+                    Created on {{ topic.created_at|date:"F d, Y \a\\t g:i A" }}
+                </p>
+            </div>
+        </div>
 
         <!-- Content Body -->
-        <div class="entry-content-body ql-editor">
+        <div class="entry-content-body ql-editor" style="padding: 0 !important;">
             {{ topic.content|safe }}
         </div>
 
-       
+        <!-- Navigation back -->
+        <div style="margin-top: 2.5rem; pt-3; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <a href="{% url 'topic_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Topics
+            </a>
+            <a href="{% url 'topic_update' topic.pk %}" class="btn btn-primary">
+                <i class="fas fa-pen-to-square"></i> Edit Topic
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -50,18 +67,20 @@
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const dropdownMenu = document.getElementById('dropdownMenu');
 
-        hamburgerBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
+        if (hamburgerBtn && dropdownMenu) {
+            hamburgerBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
 
-        document.addEventListener('click', function() {
-            dropdownMenu.classList.remove('show');
-        });
+            document.addEventListener('click', function() {
+                dropdownMenu.classList.remove('show');
+            });
 
-        dropdownMenu.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
+            dropdownMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
     });
 </script>
 {% endblock %}

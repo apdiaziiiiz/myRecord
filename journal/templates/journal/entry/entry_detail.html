@@ -1,7 +1,7 @@
 {% extends 'journal/base.html' %}
 {% load static %}
 
-{% block title %}Entry Details | MyRecord{% endblock %}
+{% block title %}{{ entry.date|date:"F d, Y" }} | MyRecord{% endblock %}
 
 {% block content %}
 <div class="entry-hero" style="background-image: url('{% static 'journal/img/nature.jpg' %}');">
@@ -9,7 +9,7 @@
 </div>
 
 <div class="entry-container">
-    <div class="entry-header">
+    <div class="entry-header-card">
         <!-- Date Badge -->
         <div class="date-badge">
             <div class="month">{{ entry.date|date:"M" }}</div>
@@ -19,25 +19,29 @@
 
         <!-- Hamburger Actions -->
         <div class="action-dropdown">
-            <button class="hamburger-btn" id="hamburgerBtn" title="Menu">
-                <i class="fas fa-bars"></i>
+            <button class="hamburger-btn" id="hamburgerBtn" title="Options">
+                <i class="fas fa-ellipsis-vertical"></i>
             </button>
             <div class="dropdown-menu" id="dropdownMenu">
                 <a href="{% url 'entry_update' entry.pk %}" class="dropdown-item">
-                    <i class="fas fa-edit"></i> Edit 
+                    <i class="fas fa-pen-to-square"></i> Edit Entry
                 </a>
                 <a href="{% url 'entry_delete' entry.pk %}" class="dropdown-item delete">
-                    <i class="fas fa-trash"></i> Delete 
+                    <i class="fas fa-trash-can"></i> Delete Entry
                 </a>
             </div>
         </div>
 
         <!-- Title and Mood -->
         <div class="entry-title-row">
-            <div class="entry-title-group">
-                <h1>Your Journal</h1>
+            <div>
+                <h1 class="page-title" style="font-size: 2rem;">Daily Reflection</h1>
+                <p style="color: var(--sand-beige-muted); font-size: 0.95rem; margin-top: 0.2rem;">
+                    <i class="far fa-clock" style="color: var(--electric-purple); margin-right: 0.4rem;"></i>
+                    Recorded on {{ entry.created_at|date:"l, F d, Y \a\\t g:i A" }}
+                </p>
             </div>
-            <div class="entry-mood-large">
+            <div class="entry-mood-large" title="Mood: {{ entry.get_mood_display }}">
                 {% if entry.mood == 'happy' %}😊
                 {% elif entry.mood == 'sad' %}😢
                 {% elif entry.mood == 'neutral' %}😐
@@ -45,40 +49,50 @@
                 {% elif entry.mood == 'tired' %}😫
                 {% elif entry.mood == 'excited' %}🤩
                 {% elif entry.mood == 'angry' %}😡
+                {% else %}✨
                 {% endif %}
             </div>
         </div>
 
         <!-- Content Body -->
-        <div class="entry-content-body ql-editor">
+        <div class="entry-content-body ql-editor" style="padding: 0 !important;">
             {{ entry.content|safe }}
         </div>
 
         <!-- Media Attachments -->
-        <!-- Media Links (Icons Only) -->
         {% if entry.images.all or entry.audio or entry.video %}
         <div class="media-links-row">
             {% if entry.images.all %}
                 {% for img in entry.images.all %}
-                <a href="{{ img.image.url }}" class="media-link-item" title="View Image" target="_blank">
-                    <i class="fas fa-image"></i>
+                <a href="{{ img.image.url }}" class="media-link-item" target="_blank" title="View attached photo">
+                    <i class="fas fa-image"></i> Photo Attachment
                 </a>
                 {% endfor %}
             {% endif %}
 
             {% if entry.audio %}
-            <a href="{{ entry.audio.url }}" class="media-link-item" title="Listen to Audio" target="_blank">
-                <i class="fas fa-microphone"></i>
+            <a href="{{ entry.audio.url }}" class="media-link-item" target="_blank" title="Listen to audio recording">
+                <i class="fas fa-microphone"></i> Audio Recording
             </a>
             {% endif %}
 
             {% if entry.video %}
-            <a href="{{ entry.video.url }}" class="media-link-item" title="Watch Video" target="_blank">
-                <i class="fas fa-video"></i>
+            <a href="{{ entry.video.url }}" class="media-link-item" target="_blank" title="Watch video attachment">
+                <i class="fas fa-video"></i> Video Memory
             </a>
             {% endif %}
         </div>
         {% endif %}
+
+        <!-- Navigation back -->
+        <div style="margin-top: 2.5rem; pt-3; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <a href="{% url 'entry_update' entry.pk %}" class="btn btn-primary">
+                <i class="fas fa-feather"></i> Edit Reflection
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -89,18 +103,20 @@
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const dropdownMenu = document.getElementById('dropdownMenu');
 
-        hamburgerBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
+        if (hamburgerBtn && dropdownMenu) {
+            hamburgerBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
 
-        document.addEventListener('click', function() {
-            dropdownMenu.classList.remove('show');
-        });
+            document.addEventListener('click', function() {
+                dropdownMenu.classList.remove('show');
+            });
 
-        dropdownMenu.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
+            dropdownMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
     });
 </script>
 {% endblock %}
