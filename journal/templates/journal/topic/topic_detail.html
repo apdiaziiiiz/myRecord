@@ -48,8 +48,8 @@
             {{ topic.content|safe }}
         </div>
 
-        <!-- Navigation back -->
-        <div style="margin-top: 2.5rem; pt-3; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+        <!-- Navigation buttons (responsive container) -->
+        <div class="detail-nav-actions">
             <a href="{% url 'topic_list' %}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back to Topics
             </a>

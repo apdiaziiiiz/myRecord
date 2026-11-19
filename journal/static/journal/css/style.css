@@ -54,6 +54,12 @@
     box-sizing: border-box;
 }
 
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--bg-main);
@@ -63,7 +69,6 @@ body {
     background-attachment: fixed;
     color: var(--text-primary);
     line-height: 1.6;
-    overflow-x: hidden;
     min-height: 100vh;
 }
 
@@ -73,6 +78,9 @@ body {
 .app-container {
     display: flex;
     min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 /* Sidebar */
@@ -106,6 +114,7 @@ body {
     padding: 3rem;
     max-width: 1380px;
     width: calc(100% - 280px);
+    overflow-x: hidden;
 }
 
 /* Mobile Header & Bottom Nav (Hidden on Desktop) */
@@ -251,6 +260,8 @@ body {
     outline: none;
     transition: var(--transition);
     white-space: nowrap;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .btn-primary {
@@ -304,6 +315,8 @@ body {
     transition: var(--transition);
     position: relative;
     backdrop-filter: blur(8px);
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .card:hover {
@@ -321,6 +334,7 @@ body {
     margin-bottom: 2.2rem;
     gap: 1.2rem;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .page-title {
@@ -329,6 +343,7 @@ body {
     letter-spacing: -1px;
     line-height: 1.15;
     color: var(--text-primary);
+    word-break: break-word;
 }
 
 .page-subtitle {
@@ -346,6 +361,7 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     margin-bottom: 2.5rem;
+    width: 100%;
 }
 
 .stat-card {
@@ -412,6 +428,9 @@ body {
     padding: 2rem;
     margin-bottom: 2rem;
     box-shadow: var(--shadow-sm);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     overflow: hidden;
 }
 
@@ -424,6 +443,7 @@ body {
     border-bottom: 1px solid var(--border-subtle);
     flex-wrap: wrap;
     gap: 0.8rem;
+    width: 100%;
 }
 
 .calendar-month-title {
@@ -463,10 +483,13 @@ body {
     color: var(--sand-beige);
 }
 
+/* Fluid, Responsive 7-Column Grid that never overflows */
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 0.9rem;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .calendar-day-header {
@@ -481,10 +504,11 @@ body {
 
 .calendar-day {
     aspect-ratio: 1;
+    min-width: 0; /* Prevents grid blowouts */
     background: var(--forest-green-dark);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    padding: 0.6rem;
+    padding: 0.5rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -493,20 +517,20 @@ body {
     cursor: pointer;
     text-decoration: none;
     color: inherit;
-    min-height: 82px;
+    box-sizing: border-box;
 }
 
 .calendar-day:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     border-color: var(--electric-purple);
-    box-shadow: 0 6px 18px rgba(139, 92, 246, 0.25);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
     background: var(--forest-green-surface);
 }
 
 .calendar-day.today {
     border: 2px solid var(--electric-purple);
-    box-shadow: 0 0 16px var(--electric-purple-glow);
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, var(--forest-green-dark) 100%);
+    box-shadow: 0 0 14px var(--electric-purple-glow);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.18) 0%, var(--forest-green-dark) 100%);
 }
 
 .calendar-day.has-entry {
@@ -519,10 +543,11 @@ body {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    line-height: 1;
 }
 
 .day-number {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--sand-beige);
 }
@@ -535,11 +560,11 @@ body {
 }
 
 .day-mood {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     line-height: 1;
     text-align: center;
     margin: auto 0;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
     transition: transform 0.2s ease;
 }
 
@@ -548,12 +573,12 @@ body {
 }
 
 .day-entry-indicator {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: var(--electric-purple);
     align-self: center;
-    box-shadow: 0 0 8px var(--electric-purple);
+    box-shadow: 0 0 6px var(--electric-purple);
 }
 
 .empty-day-cta {
@@ -565,11 +590,11 @@ body {
     opacity: 0;
     transition: var(--transition);
     color: var(--electric-purple);
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .calendar-day:hover .empty-day-cta {
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 /* ==========================================================================
@@ -580,6 +605,7 @@ body {
     grid-template-columns: repeat(7, 1fr);
     gap: 0.8rem;
     margin-top: 0.8rem;
+    width: 100%;
 }
 
 .mood-option {
@@ -643,6 +669,7 @@ body {
    ========================================================================== */
 .form-group {
     margin-bottom: 1.8rem;
+    width: 100%;
 }
 
 .form-label {
@@ -665,6 +692,7 @@ body {
     color: var(--text-primary);
     transition: var(--transition);
     outline: none;
+    box-sizing: border-box;
 }
 
 .form-control:focus {
@@ -679,6 +707,7 @@ body {
     gap: 0.9rem;
     margin-top: 1.2rem;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .media-pill {
@@ -694,6 +723,7 @@ body {
     color: var(--sand-beige);
     cursor: pointer;
     transition: var(--transition);
+    box-sizing: border-box;
 }
 
 .media-pill i {
@@ -739,6 +769,7 @@ body {
     margin-bottom: 2rem;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-subtle);
+    width: 100%;
 }
 
 .entry-hero-overlay {
@@ -751,6 +782,7 @@ body {
     max-width: 900px;
     margin: 0 auto;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .entry-header-card {
@@ -760,6 +792,9 @@ body {
     padding: 2.5rem;
     position: relative;
     box-shadow: var(--shadow-md);
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .date-badge {
@@ -900,6 +935,20 @@ body {
     margin-bottom: 1.2rem;
 }
 
+/* Navigation button container on detail pages */
+.detail-nav-actions {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 /* Media Links Row */
 .media-links-row {
     display: flex;
@@ -908,6 +957,7 @@ body {
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-subtle);
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .media-link-item {
@@ -943,6 +993,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
+    width: 100%;
 }
 
 .topic-card {
@@ -956,6 +1007,7 @@ body {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .topic-card::before {
@@ -1028,12 +1080,13 @@ body {
 }
 
 /* ==========================================================================
-   QUILL RICH TEXT EDITOR STYLING
+   QUILL RICH TEXT EDITOR STYLING & TOOLBAR FORMATTING
    ========================================================================== */
 #editor-container {
     width: 100%;
     background: var(--forest-green-dark);
     margin-bottom: 1rem;
+    box-sizing: border-box;
 }
 
 .ql-toolbar.ql-snow {
@@ -1043,7 +1096,123 @@ body {
     border-top-right-radius: var(--radius-md);
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
     padding: 0.75rem 1rem !important;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Grouping Toolbar Items Elegantly */
+.ql-toolbar.ql-snow .ql-formats {
+    margin-right: 6px !important;
+    margin-bottom: 4px !important;
+    display: inline-flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(232, 220, 196, 0.08);
+    gap: 3px;
+}
+
+.ql-toolbar.ql-snow button {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 5px !important;
+    border-radius: 6px;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ql-toolbar.ql-snow button:hover,
+.ql-toolbar.ql-snow button.ql-active {
+    background: var(--electric-purple) !important;
+}
+
+.ql-toolbar.ql-snow button:hover .ql-stroke,
+.ql-toolbar.ql-snow button.ql-active .ql-stroke {
+    stroke: #ffffff !important;
+}
+
+.ql-toolbar.ql-snow button:hover .ql-fill,
+.ql-toolbar.ql-snow button.ql-active .ql-fill {
+    fill: #ffffff !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker {
+    height: 32px !important;
+    line-height: 26px !important;
+    border-radius: 6px;
+    background: var(--forest-green-dark);
+    border: 1px solid var(--border-subtle);
+    transition: var(--transition);
+    color: var(--sand-beige) !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker.ql-header {
+    width: 104px;
+}
+
+.ql-toolbar.ql-snow .ql-picker.ql-color,
+.ql-toolbar.ql-snow .ql-picker.ql-background {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label,
+.ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 6px !important;
+    transition: var(--transition);
+    position: relative !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label:hover,
+.ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label:hover {
+    background: var(--electric-purple) !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label:hover .ql-stroke,
+.ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label:hover .ql-stroke {
+    stroke: #ffffff !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label:hover .ql-fill,
+.ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label:hover .ql-fill {
+    fill: #ffffff !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label svg,
+.ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label svg {
+    width: 14px !important;
+    height: 14px !important;
+    position: static !important;
+    margin: 0 !important;
+    display: block !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker-label {
+    padding-left: 8px !important;
+    padding-right: 20px !important;
+    font-weight: 600;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
 }
 
 .ql-container.ql-snow {
@@ -1055,12 +1224,16 @@ body {
     font-size: 1.1rem;
     color: var(--text-primary);
     background: var(--forest-green-dark);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .ql-editor {
     min-height: 380px;
     line-height: 1.85;
     padding: 1.25rem 1.5rem !important;
+    word-break: break-word;
+    box-sizing: border-box;
 }
 
 .ql-snow .ql-stroke { stroke: var(--sand-beige) !important; }
@@ -1071,6 +1244,7 @@ body {
     border: 1px solid var(--border-subtle) !important; 
     color: var(--sand-beige) !important; 
     border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
 }
 .ql-snow .ql-picker-item:hover { color: var(--electric-purple) !important; }
 .ql-editor.ql-blank::before { color: var(--text-muted) !important; font-style: normal; }
@@ -1122,7 +1296,6 @@ body {
         gap: 0.5rem;
     }
     .calendar-day {
-        min-height: 70px;
         padding: 0.45rem;
     }
     .day-mood {
@@ -1277,9 +1450,11 @@ body {
     .main-content {
         margin-left: 0;
         width: 100%;
-        padding: 1.2rem;
-        padding-top: calc(60px + 1.2rem);
+        max-width: 100%;
+        padding: 1rem;
+        padding-top: calc(60px + 1rem);
         padding-bottom: calc(64px + 1.5rem);
+        box-sizing: border-box;
     }
 
     /* Header & Buttons on Mobile */
@@ -1291,17 +1466,19 @@ body {
     }
 
     .page-title {
-        font-size: 1.85rem;
+        font-size: 1.75rem;
     }
 
     .page-subtitle {
-        font-size: 0.9rem;
+        font-size: 0.88rem;
     }
 
     /* Full width buttons */
     .btn {
         width: 100%;
         padding: 0.85rem 1.2rem;
+        white-space: normal;
+        text-align: center;
     }
 
     /* Stats Grid */
@@ -1312,45 +1489,66 @@ body {
     }
 
     .stat-card {
-        padding: 1.4rem;
+        padding: 1.3rem;
     }
 
     .stat-value {
-        font-size: 2.4rem;
+        font-size: 2.2rem;
     }
 
-    /* Calendar Grid */
+    /* ==========================================================================
+       IMAGE 1 FIX: CALENDAR DAY RESPONSIVENESS ON PHONES
+       ========================================================================== */
     .calendar-card {
-        padding: 1rem;
+        padding: 0.85rem 0.65rem;
         border-radius: var(--radius-md);
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .calendar-header-strip {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.8rem;
+        padding-bottom: 0.8rem;
     }
 
     .calendar-grid {
-        gap: 0.35rem;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 4px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .calendar-day {
-        min-height: 52px;
-        padding: 0.3rem;
-        border-radius: 8px;
+        min-height: auto;
+        aspect-ratio: 1;
+        padding: 3px 2px;
+        border-radius: 6px;
+    }
+
+    .day-header-info {
+        justify-content: center;
     }
 
     .day-number {
-        font-size: 0.8rem;
+        font-size: 0.72rem;
+        font-weight: 700;
     }
 
     .day-weekday {
-        font-size: 0.55rem;
+        display: none; /* Hide weekday letters inside compact day box */
     }
 
     .day-mood {
-        font-size: 1rem;
+        font-size: 0.85rem;
+        margin: 2px 0;
+    }
+
+    .day-entry-indicator {
+        width: 4px;
+        height: 4px;
     }
 
     /* Mood Selector in Form */
@@ -1371,22 +1569,130 @@ body {
         font-size: 0.68rem;
     }
 
-    /* Quill Editor */
-    .ql-editor {
-        min-height: 260px;
-        padding: 1rem !important;
-        font-size: 1rem;
+    /* ==========================================================================
+       IMAGE 3 FIX: QUILL EDITOR TOOLBAR ON PHONES
+       Modern segmented bar with distinct pill islands, crisp icons, touch spacing
+       ========================================================================== */
+    .ql-toolbar.ql-snow {
+        padding: 0.5rem 0.4rem !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 6px 6px !important;
+        background: var(--forest-green-dark) !important;
+        border-bottom: 1px solid var(--border-subtle) !important;
     }
 
-    /* Detail Views */
+    .ql-toolbar.ql-snow .ql-formats {
+        margin: 0 !important;
+        background: rgba(0, 0, 0, 0.35) !important;
+        padding: 3px 5px !important;
+        border-radius: 10px !important;
+        border: 1px solid rgba(232, 220, 196, 0.12) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 3px !important;
+    }
+
+    .ql-toolbar.ql-snow .ql-picker.ql-header {
+        width: 96px !important;
+        height: 30px !important;
+        line-height: 26px !important;
+        font-size: 0.84rem !important;
+        border-radius: 7px !important;
+        background: rgba(31, 61, 43, 0.6) !important;
+        border: 1px solid rgba(232, 220, 196, 0.2) !important;
+    }
+
+    .ql-toolbar.ql-snow .ql-picker.ql-header .ql-picker-label {
+        padding-left: 8px !important;
+        padding-right: 20px !important;
+        color: var(--sand-beige) !important;
+    }
+
+    .ql-toolbar.ql-snow .ql-picker.ql-color,
+    .ql-toolbar.ql-snow .ql-picker.ql-background {
+        width: 30px !important;
+        height: 30px !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        vertical-align: middle !important;
+    }
+
+    .ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label,
+    .ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label {
+        width: 30px !important;
+        height: 30px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 6px !important;
+        position: relative !important;
+    }
+
+    .ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label:hover,
+    .ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label:hover {
+        background: var(--electric-purple) !important;
+    }
+
+    .ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label:hover .ql-stroke,
+    .ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label:hover .ql-stroke {
+        stroke: #ffffff !important;
+    }
+
+    .ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label:hover .ql-fill,
+    .ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label:hover .ql-fill {
+        fill: #ffffff !important;
+    }
+
+    .ql-toolbar.ql-snow .ql-picker.ql-color .ql-picker-label svg,
+    .ql-toolbar.ql-snow .ql-picker.ql-background .ql-picker-label svg {
+        width: 14px !important;
+        height: 14px !important;
+        position: static !important;
+        margin: 0 !important;
+        display: block !important;
+    }
+
+    .ql-toolbar.ql-snow button {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 5px !important;
+        border-radius: 7px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .ql-toolbar.ql-snow button:hover,
+    .ql-toolbar.ql-snow button.ql-active {
+        background: var(--electric-purple) !important;
+    }
+
+    .ql-editor {
+        min-height: 240px;
+        padding: 0.9rem !important;
+        font-size: 0.98rem;
+    }
+
+    /* ==========================================================================
+       IMAGE 2 FIX: DETAIL VIEW & NAVIGATION BUTTONS WRAPPING
+       Prevents buttons or action bars from overflowing off the screen
+       ========================================================================== */
     .entry-hero {
-        height: 150px;
+        height: 140px;
         border-radius: var(--radius-md);
         margin-bottom: 1.2rem;
     }
 
     .entry-header-card {
-        padding: 1.4rem;
+        padding: 1.2rem;
+        border-radius: var(--radius-md);
     }
 
     .entry-title-row {
@@ -1419,6 +1725,21 @@ body {
         right: 1.2rem;
     }
 
+    /* Detail View Action Buttons: Full-width stacked & 100% inside container */
+    .detail-nav-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        margin-top: 1.8rem;
+        padding-top: 1.2rem;
+        width: 100%;
+    }
+
+    .detail-nav-actions .btn {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
     .topics-grid {
         grid-template-columns: 1fr;
     }
@@ -1432,14 +1753,22 @@ body {
 
 /* Extra Small Phones (Below 380px) */
 @media (max-width: 380px) {
+    .calendar-grid {
+        gap: 2px;
+    }
+    .calendar-day {
+        padding: 2px 1px;
+    }
+    .day-number {
+        font-size: 0.68rem;
+    }
+    .day-mood {
+        font-size: 0.78rem;
+    }
     .mood-grid {
         grid-template-columns: repeat(3, 1fr);
     }
-    .calendar-day {
-        min-height: 44px;
-        padding: 0.2rem;
-    }
-    .day-weekday {
-        display: none;
+    .ql-toolbar.ql-snow .ql-picker {
+        width: 78px !important;
     }
 }
