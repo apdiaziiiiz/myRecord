@@ -3,7 +3,9 @@
             --bg-white: #ffffff;
             --text-main: #111827;
             --text-muted: #6b7280;
-            --accent: #0f172a; /* Midnight Blue/Black */
+            --accent: #1f3d2b; /* Forest Green */
+            --accent-purple: #8b5cf6; /* Electric Purple */
+            --sand-beige: #e8dcc4;
             --gray-light: #f3f4f6;
             --gray-border: #e5e7eb;
             --anim-speed: 0.4s;
@@ -18,9 +20,9 @@
 
         body {
             font-family: var(--font-main);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
             display: flex;
             background-color: var(--bg-white);
         }
@@ -28,15 +30,15 @@
         /* --- LEFT PANEL (The Abstract Animation) --- */
         .left-panel {
             flex: 1;
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            background: linear-gradient(135deg, #f7f9f8 0%, #e8edea 100%);
             position: relative;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Subtle texture overlay */
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 40px 40px;
+            min-height: 100vh;
         }
 
         /* CSS Only Art for Left Panel */
@@ -71,7 +73,7 @@
             100% { transform: translateY(0px) scale(1); }
         }
 
-        /* --- RIGHT PANEL (The Signup) --- */
+        /* --- RIGHT PANEL (The Form) --- */
         .right-panel {
             flex: 1;
             display: flex;
@@ -79,9 +81,10 @@
             justify-content: center;
             align-items: center;
             background-color: var(--bg-white);
-            padding: 4rem;
+            padding: 3rem 2rem;
             position: relative;
             z-index: 10;
+            min-height: 100vh;
         }
 
         .form-container {
@@ -90,11 +93,11 @@
         }
 
         .header {
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
         }
 
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: var(--text-main);
             margin-bottom: 0.5rem;
@@ -110,8 +113,8 @@
         .input-group {
             position: relative;
             margin-bottom: 1.5rem;
-            height: 60px; /* Fixed height for the container */
-            perspective: 1000px; /* Essential for 3D effect */
+            height: 60px;
+            perspective: 1000px;
         }
 
         .input-wrapper {
@@ -122,7 +125,6 @@
             transform-style: preserve-3d;
         }
 
-        /* The "Cover" that hides the input */
         .input-cover {
             position: absolute;
             top: 0;
@@ -144,7 +146,6 @@
             overflow: hidden;
         }
 
-        /* The decorative bar on the cover */
         .input-cover::after {
             content: '';
             position: absolute;
@@ -156,7 +157,6 @@
             transition: width 0.3s ease;
         }
 
-        /* The Actual Input Field (Hidden initially) */
         .real-input {
             position: absolute;
             top: 0;
@@ -172,21 +172,17 @@
             font-family: var(--font-main);
             color: var(--text-main);
             outline: none;
-            opacity: 0; /* Invisible initially */
-            transform: translateZ(-20px) translateY(10px); /* Pushed back */
+            opacity: 0;
+            transform: translateZ(-20px) translateY(10px);
             transition: all var(--anim-speed) ease;
-            pointer-events: none; /* Can't click until revealed */
+            pointer-events: none;
         }
 
-        /* --- HOVER & FOCUS STATES (The "Reveal") --- */
-        
-        /* When hovering the group, the cover slides up and fades */
         .input-group:hover .input-cover {
             transform: translateY(-100%) scale(0.9);
             opacity: 0;
         }
         
-        /* When hovering, the real input slides in */
         .input-group:hover .real-input,
         .real-input:focus {
             opacity: 1;
@@ -195,7 +191,6 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Keep it open if user is typing (focus) */
         .input-group:focus-within .input-cover {
             transform: translateY(-120%) scale(0.8);
             opacity: 0;
@@ -211,7 +206,7 @@
         /* --- BUTTON --- */
         .btn-signup {
             width: 100%;
-            padding: 1.2rem;
+            padding: 1.1rem;
             background-color: var(--accent);
             color: white;
             border: none;
@@ -225,7 +220,8 @@
 
         .btn-signup:hover {
             transform: translateY(-2px);
-            box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.3);
+            box-shadow: 0 16px 28px -10px rgba(31, 61, 43, 0.4);
+            background-color: #2c563d;
         }
 
         .btn-signup:active {
@@ -240,65 +236,90 @@
         }
         
         .footer-text a {
-            color: var(--text-main);
+            color: var(--accent-purple);
             text-decoration: none;
             font-weight: 600;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.2s;
+            transition: color 0.2s;
         }
 
         .footer-text a:hover {
-            border-color: var(--text-main);
+            text-decoration: underline;
         }
 
+        /* Password toggle */
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            opacity: 0; 
+            transform: translateZ(-20px) translateY(10px) translateY(-50%);
+            transition: all var(--anim-speed) ease;
+            pointer-events: none;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        /* the show password icon */
-        /* Position the toggle button relative to the wrapper */
-.password-toggle {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-muted);
-    
-    /* Animation Properties (Matches real-input) */
-    opacity: 0; 
-    transform: translateZ(-20px) translateY(10px) translateY(-50%); /* Combined Y offsets */
-    transition: all var(--anim-speed) ease;
-    pointer-events: none; /* Can't click when hidden */
-    z-index: 20; /* Sit on top of input */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .password-toggle:hover {
+            color: var(--accent-purple);
+        }
 
-.password-toggle:hover {
-    color: var(--accent);
-}
+        .input-group:hover .password-toggle,
+        .input-group:focus-within .password-toggle {
+            opacity: 1;
+            transform: translateZ(0) translateY(-50%);
+            pointer-events: all;
+        }
 
-/* --- THE REVEAL LOGIC --- */
+        /* --- RESPONSIVE FIXES FOR PHONE & SMALL SCREENS --- */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+            }
 
-/* When hovering the group, reveal the eye */
-.input-group:hover .password-toggle {
-    opacity: 1;
-    transform: translateZ(0) translateY(-50%);
-    pointer-events: all;
-}
+            .left-panel {
+                display: none; /* Hide abstract panel on phone/tablet to focus directly on form */
+            }
 
-/* When typing (focus), keep the eye visible */
-.input-group:focus-within .password-toggle {
-    opacity: 1;
-    transform: translateZ(0) translateY(-50%);
-    pointer-events: all;
-}
+            .right-panel {
+                flex: 1;
+                width: 100%;
+                padding: 2.5rem 1.5rem;
+                min-height: 100vh;
+            }
 
-/* The Error Message Styling */
-.error-msg {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #ef4444; /* Premium Red */
-    text-align: center;
-    margin-bottom: 1rem;
-}
+            .form-container {
+                max-width: 100%;
+            }
+
+            .header h1 {
+                font-size: 1.9rem;
+            }
+
+            /* On touchscreen mobile devices, make the inputs immediately visible or smooth */
+            .input-cover {
+                display: none;
+            }
+
+            .real-input {
+                position: relative;
+                opacity: 1;
+                transform: none;
+                pointer-events: all;
+                padding-right: 3rem;
+            }
+
+            .password-toggle {
+                opacity: 1;
+                transform: translateY(-50%);
+                pointer-events: all;
+            }
+        }
