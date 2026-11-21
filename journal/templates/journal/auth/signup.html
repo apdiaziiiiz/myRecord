@@ -56,8 +56,15 @@
     
     <script>
         // Make the rendered form fields match the design
-        document.querySelectorAll('.input-wrapper input').forEach(input => {
-            input.classList.add('real-input');
+        document.querySelectorAll('.input-wrapper').forEach(wrapper => {
+            const input = wrapper.querySelector('input');
+            const cover = wrapper.querySelector('.input-cover');
+            if (input) {
+                input.classList.add('real-input');
+                if (cover) {
+                    input.placeholder = cover.textContent.trim();
+                }
+            }
         });
     </script>
 </body>
