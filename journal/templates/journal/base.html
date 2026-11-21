@@ -11,7 +11,237 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Quill Rich Text Editor CSS first so our style.css custom theme overrides it cleanly -->
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'journal/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'journal/css/style.css' %}?v=2.1">
+    <style>
+        /* Interactive Profile Trigger */
+        .user-profile-trigger {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.8rem !important;
+            padding: 0.6rem 0.75rem !important;
+            border-radius: 14px !important;
+            cursor: pointer !important;
+            background: rgba(232, 220, 196, 0.05) !important;
+            border: 1px solid rgba(232, 220, 196, 0.1) !important;
+            transition: all 0.2s ease !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            user-select: none !important;
+            color: inherit !important;
+            font: inherit !important;
+        }
+        .user-profile-trigger:hover,
+        .user-profile-trigger.active {
+            background: rgba(232, 220, 196, 0.1) !important;
+            border-color: rgba(232, 220, 196, 0.22) !important;
+        }
+        .user-profile-arrow {
+            margin-left: auto;
+            color: var(--text-muted, #95a39a);
+            font-size: 0.8rem;
+            transition: transform 0.25s ease, color 0.2s ease;
+        }
+        .user-profile-trigger.active .user-profile-arrow {
+            transform: rotate(180deg);
+            color: var(--sand-beige, #e8dcc4);
+        }
+
+        /* User Menu Dropdown */
+        .user-menu-dropdown {
+            position: absolute !important;
+            bottom: calc(100% + 10px) !important;
+            left: 0 !important;
+            right: 0 !important;
+            background: #14241b !important;
+            border: 1px solid rgba(232, 220, 196, 0.18) !important;
+            border-radius: 16px !important;
+            padding: 0.5rem !important;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+            z-index: 100 !important;
+            animation: userMenuPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        @keyframes userMenuPop {
+            from {
+                opacity: 0;
+                transform: translateY(8px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .user-menu-item {
+            all: unset !important;
+            width: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.8rem !important;
+            padding: 0.75rem 0.95rem !important;
+            border-radius: 10px !important;
+            background: transparent !important;
+            border: none !important;
+            color: var(--sand-beige, #e8dcc4) !important;
+            font-family: inherit !important;
+            font-size: 0.92rem !important;
+            font-weight: 500 !important;
+            cursor: pointer !important;
+            box-sizing: border-box !important;
+            transition: all 0.15s ease !important;
+        }
+        .user-menu-item:hover {
+            background: rgba(232, 220, 196, 0.1) !important;
+            color: #ffffff !important;
+        }
+        .user-menu-item i {
+            font-size: 0.95rem !important;
+            width: 1.25rem !important;
+            color: var(--sand-beige-muted, rgba(232, 220, 196, 0.7)) !important;
+            transition: color 0.15s ease !important;
+        }
+        .user-menu-item:hover i {
+            color: #ffffff !important;
+        }
+        .user-menu-divider {
+            height: 1px !important;
+            background: rgba(232, 220, 196, 0.1) !important;
+            margin: 0.35rem 0.2rem !important;
+        }
+        .user-menu-item-danger {
+            color: #f87171 !important;
+        }
+        .user-menu-item-danger i {
+            color: #ef4444 !important;
+        }
+        .user-menu-item-danger:hover {
+            background: rgba(239, 68, 68, 0.16) !important;
+            color: #fca5a5 !important;
+        }
+        .user-menu-item-danger:hover i {
+            color: #f87171 !important;
+        }
+
+        /* Account Delete Confirmation Modal */
+        .account-delete-modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            z-index: 999999 !important;
+            display: none;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 1.25rem !important;
+        }
+        .account-delete-backdrop {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            background: rgba(5, 12, 8, 0.85) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+            animation: modalFadeIn 0.2s ease !important;
+        }
+        .account-delete-dialog {
+            position: relative !important;
+            background: #14231a !important;
+            border: 1px solid rgba(239, 68, 68, 0.35) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(239, 68, 68, 0.15) !important;
+            max-width: 450px !important;
+            width: 100% !important;
+            padding: 2.2rem 2rem !important;
+            text-align: center !important;
+            animation: modalScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            z-index: 1000000 !important;
+            box-sizing: border-box !important;
+        }
+        @keyframes modalScaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.92) translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .account-delete-icon {
+            width: 68px !important;
+            height: 68px !important;
+            border-radius: 50% !important;
+            background: rgba(239, 68, 68, 0.14) !important;
+            border: 1px solid rgba(239, 68, 68, 0.3) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin-bottom: 1.25rem !important;
+        }
+        .account-delete-icon i {
+            font-size: 1.85rem !important;
+            color: #ef4444 !important;
+        }
+        .account-delete-title {
+            font-size: 1.45rem !important;
+            font-weight: 800 !important;
+            color: var(--sand-beige, #e8dcc4) !important;
+            margin-bottom: 0.75rem !important;
+        }
+        .account-delete-desc {
+            color: var(--text-muted, #95a39a) !important;
+            font-size: 0.93rem !important;
+            line-height: 1.6 !important;
+            margin-bottom: 1.8rem !important;
+        }
+        .account-delete-actions {
+            display: flex !important;
+            gap: 0.85rem !important;
+            justify-content: center !important;
+            flex-wrap: wrap !important;
+        }
+        .account-delete-actions .btn {
+            flex: 1 1 140px !important;
+            padding: 0.75rem 1.2rem !important;
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+            font-size: 0.95rem !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            text-decoration: none !important;
+            box-sizing: border-box !important;
+        }
+        .account-delete-actions .btn-cancel {
+            background: #192d21 !important;
+            color: var(--sand-beige, #e8dcc4) !important;
+            border: 1px solid rgba(232, 220, 196, 0.16) !important;
+        }
+        .account-delete-actions .btn-cancel:hover {
+            background: #20392b !important;
+            color: #ffffff !important;
+            border-color: rgba(232, 220, 196, 0.3) !important;
+        }
+        .account-delete-actions .btn-delete-confirm {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%) !important;
+            color: #ffffff !important;
+            border: none !important;
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4) !important;
+        }
+        .account-delete-actions .btn-delete-confirm:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 18px rgba(220, 38, 38, 0.55) !important;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     {% block extra_head %}{% endblock %}
@@ -70,25 +300,35 @@
             </nav>
             
             <div class="sidebar-user-footer">
-                <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem; padding: 0.3rem 0.5rem;">
+                <!-- User Menu Dropdown (shows on username click) -->
+                <div class="user-menu-dropdown" id="userMenuDropdown" style="display: none;">
+                    <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="user-menu-item">
+                            <i class="fas fa-arrow-right-from-bracket"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                    <div class="user-menu-divider"></div>
+                    <button type="button" class="user-menu-item user-menu-item-danger" id="openDeleteAccountModalBtn">
+                        <i class="fas fa-trash-can"></i>
+                        <span>Delete Account</span>
+                    </button>
+                </div>
+
+                <!-- Clickable User Profile Row -->
+                <div class="user-profile-trigger" id="userMenuTrigger" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false" title="Account options">
                     <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--electric-purple); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 0.95rem; box-shadow: 0 2px 8px var(--electric-purple-glow); flex-shrink: 0;">
                         {{ request.user.username|make_list|first|upper }}
                     </div>
-                    <div style="overflow: hidden;">
+                    <div style="overflow: hidden; text-align: left;">
                         <div style="color: var(--sand-beige); font-weight: 700; font-size: 0.9rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
                             {{ request.user.username }}
                         </div>
                         <div style="color: var(--text-muted); font-size: 0.75rem;">Active Journal</div>
                     </div>
+                    <i class="fas fa-chevron-up user-profile-arrow"></i>
                 </div>
-
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="logout-btn">
-                        <i class="fas fa-arrow-right-from-bracket"></i>
-                        <span>Logout</span>
-                    </button>
-                </form>
             </div>
         </aside>
 
@@ -148,12 +388,124 @@
 
             // Close on escape key
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
-                    closeSidebar();
+                if (e.key === 'Escape') {
+                    if (deleteModal && deleteModal.style.display !== 'none') {
+                        closeDeleteModal();
+                    } else if (userMenuDropdown && userMenuDropdown.style.display !== 'none') {
+                        toggleUserMenu(false);
+                    } else if (sidebar && sidebar.classList.contains('open')) {
+                        closeSidebar();
+                    }
                 }
             });
+
+            // User Menu & Delete Account Modal Logic
+            const userMenuTrigger = document.getElementById('userMenuTrigger');
+            const userMenuDropdown = document.getElementById('userMenuDropdown');
+            const openDeleteModalBtn = document.getElementById('openDeleteAccountModalBtn');
+            const deleteModal = document.getElementById('deleteAccountModal');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteAccountBtn');
+            const deleteBackdrop = document.getElementById('deleteAccountBackdrop');
+
+            function toggleUserMenu(show) {
+                if (!userMenuDropdown) return;
+                const isCurrentlyOpen = userMenuDropdown.style.display !== 'none';
+                const shouldOpen = show !== undefined ? show : !isCurrentlyOpen;
+                if (shouldOpen) {
+                    userMenuDropdown.style.display = 'block';
+                    if (userMenuTrigger) {
+                        userMenuTrigger.classList.add('active');
+                        userMenuTrigger.setAttribute('aria-expanded', 'true');
+                    }
+                } else {
+                    userMenuDropdown.style.display = 'none';
+                    if (userMenuTrigger) {
+                        userMenuTrigger.classList.remove('active');
+                        userMenuTrigger.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            }
+
+            if (userMenuTrigger) {
+                userMenuTrigger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleUserMenu();
+                });
+                userMenuTrigger.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleUserMenu();
+                    }
+                });
+            }
+
+            document.addEventListener('click', function(e) {
+                if (userMenuDropdown && userMenuDropdown.style.display !== 'none') {
+                    if (!userMenuDropdown.contains(e.target) && !userMenuTrigger.contains(e.target)) {
+                        toggleUserMenu(false);
+                    }
+                }
+            });
+
+            function openDeleteModal() {
+                toggleUserMenu(false);
+                if (deleteModal) {
+                    deleteModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+
+            function closeDeleteModal() {
+                if (deleteModal) {
+                    deleteModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            }
+
+            if (openDeleteModalBtn) {
+                openDeleteModalBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    openDeleteModal();
+                });
+            }
+
+            if (cancelDeleteBtn) {
+                cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+            }
+
+            if (deleteBackdrop) {
+                deleteBackdrop.addEventListener('click', closeDeleteModal);
+            }
         });
     </script>
+
+    <!-- Account Deletion Confirmation Modal -->
+    <div class="account-delete-modal" id="deleteAccountModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+        <div class="account-delete-backdrop" id="deleteAccountBackdrop"></div>
+        <div class="account-delete-dialog">
+            <div class="account-delete-icon">
+                <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="account-delete-title" id="deleteModalTitle">Delete Account?</h3>
+            <p class="account-delete-desc">
+                Are you sure you want to permanently delete your account (<strong>{{ request.user.username }}</strong>)?
+                <br><br>
+                All your <strong>journal entries, topics, photos, audio, video</strong>, and personal data will be completely erased. This action <strong>cannot be undone</strong>.
+            </p>
+            <form method="post" action="{% url 'delete_account' %}">
+                {% csrf_token %}
+                <div class="account-delete-actions">
+                    <button type="button" class="btn btn-secondary btn-cancel" id="cancelDeleteAccountBtn">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger btn-delete-confirm">
+                        <i class="fas fa-trash-can"></i> Yes, Delete Everything
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     {% block extra_js %}{% endblock %}
 </body>

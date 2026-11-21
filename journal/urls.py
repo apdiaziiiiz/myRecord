@@ -7,6 +7,7 @@ urlpatterns = [
     path('', auth_views.LoginView.as_view(template_name='journal/auth/login.html', redirect_authenticated_user=True), name='login'),
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view, name='logout'),
+    path('delete-account/', views.delete_account_view, name='delete_account'),
     
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('entry/new/', views.EntryCreateView.as_view(), name='entry_create'),

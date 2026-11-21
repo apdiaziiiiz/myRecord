@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Count
 from django.utils import timezone
@@ -32,6 +33,33 @@ def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect('login')
+
+@login_required
+def delete_account_view(request):
+    if request.method == 'POST':
+        user = request.user
+        # Clean up media files attached to user entries
+        for entry in user.entries.all():
+            for img in entry.images.all():
+                if img.image:
+                    try:
+                        img.image.delete(save=False)
+                    except Exception:
+                        pass
+            if entry.audio:
+                try:
+                    entry.audio.delete(save=False)
+                except Exception:
+                    pass
+            if entry.video:
+                try:
+                    entry.video.delete(save=False)
+                except Exception:
+                    pass
+        logout(request)
+        user.delete()
+        return redirect('login')
+    return redirect('dashboard')
 
 class DashboardView(LoginRequiredMixin, ListView):
     model = JournalEntry
