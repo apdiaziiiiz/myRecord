@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resend Verification - MyJournal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'journal/css/login.css' %}">
+</head>
+<body>
+
+    <div class="left-panel">
+        <div class="art-object"></div>
+    </div>
+
+    <div class="right-panel">
+        <div class="form-container">
+            <div class="header">
+                <h1>Resend activation link</h1>
+                <p>Enter the email address you registered with, and we'll send a fresh activation link.</p>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div style="padding: 0.85rem 1rem; margin-bottom: 1.25rem; border-radius: 8px; font-size: 0.9rem; background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'resend_verification' %}">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                    <p style="color: #ef4444; margin-bottom: 1rem; text-align: center; font-size: 0.9rem;">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <div class="input-cover">Email Address</div>
+                        <input type="email" name="email" class="real-input" placeholder="you@example.com" value="{{ form.email.value|default:'' }}" required autofocus>
+                    </div>
+                    {% if form.email.errors %}
+                        <p style="color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn-signup" style="margin-top: 1rem;">Send Verification Link</button>
+            </form>
+
+            <div class="footer-text" style="margin-top: 1.5rem; text-align: center; color: #888; font-size: 0.9rem;">
+                Remember your password and already verified? <a href="{% url 'login' %}" style="color: rgb(5, 29, 243); text-decoration: none; font-weight: 600;">Log in</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
