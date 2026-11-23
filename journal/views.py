@@ -2,43 +2,135 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.http import JsonResponse
 from django.views import View
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib import messages
+from django.conf import settings
 from django.db.models import Count
 from django.utils import timezone
 from .models import JournalEntry, JournalImage, Topic
-from .forms import JournalEntryForm, TopicForm
+from .forms import (
+    JournalEntryForm,
+    TopicForm,
+    CustomUserCreationForm,
+    ResendVerificationForm,
+)
+from .tokens import account_activation_token
 import datetime
 import calendar
 import json
+
+
+def send_verification_email(request, user):
+    """
+    Sends a time-limited account activation link with HTML and plain text alternatives.
+    """
+    token = account_activation_token.make_token(user)
+    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+    activation_url = request.build_absolute_uri(
+        reverse('activate', kwargs={'uidb64': uidb64, 'token': token})
+    )
+    context = {
+        'user': user,
+        'activation_url': activation_url,
+        'protocol': 'https' if request.is_secure() else 'http',
+        'domain': request.get_host(),
+        'uid': uidb64,
+        'token': token,
+    }
+    subject = "Verify your MyJournal email address"
+    text_content = render_to_string('journal/emails/activation_email.txt', context)
+    html_content = render_to_string('journal/emails/activation_email.html', context)
+
+    msg = EmailMultiAlternatives(
+        subject=subject,
+        body=text_content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[user.email],
+    )
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
 
 def signup_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
-            return redirect('dashboard')
+            try:
+                send_verification_email(request, user)
+            except Exception as e:
+                print(f"Error sending activation email: {e}")
+            request.session['verification_email'] = user.email
+            return redirect('verification_sent')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'journal/auth/signup.html', {'form': form})
+
+
+def verification_sent_view(request):
+    email = request.session.get('verification_email', '')
+    return render(request, 'journal/auth/verification_sent.html', {'email': email})
+
+
+def activate_view(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return render(request, 'journal/auth/activation_success.html', {'user': user})
+    else:
+        return render(request, 'journal/auth/activation_invalid.html')
+
+
+def resend_verification_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        form = ResendVerificationForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email'].strip().lower()
+            user = User.objects.filter(email__iexact=email, is_active=False).first()
+            if user:
+                try:
+                    send_verification_email(request, user)
+                except Exception as e:
+                    print(f"Error resending verification email: {e}")
+            # Prevents email enumeration by always showing success page
+            request.session['verification_email'] = email
+            return redirect('verification_sent')
+    else:
+        initial_email = request.GET.get('email', '')
+        form = ResendVerificationForm(initial={'email': initial_email})
+
+    return render(request, 'journal/auth/resend_verification.html', {'form': form})
+
 
 def logout_view(request):
     if request.user.is_authenticated:
         logout(request)
     return redirect('login')
 
+
 @login_required
 def delete_account_view(request):
     if request.method == 'POST':
         user = request.user
-        # Clean up media files attached to user entries
         for entry in user.entries.all():
             for img in entry.images.all():
                 if img.image:
@@ -60,6 +152,7 @@ def delete_account_view(request):
         user.delete()
         return redirect('login')
     return redirect('dashboard')
+
 
 class DashboardView(LoginRequiredMixin, ListView):
     model = JournalEntry

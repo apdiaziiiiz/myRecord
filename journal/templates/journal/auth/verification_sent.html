@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - MyJournal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'journal/css/login.css' %}">
+</head>
+<body>
+
+    <div class="left-panel">
+        <div class="art-object"></div>
+    </div>
+
+    <div class="right-panel">
+        <div class="form-container" style="text-align: center;">
+            <div style="width: 64px; height: 64px; background: #ecfdf5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #059669;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            </div>
+
+            <div class="header" style="margin-bottom: 1.5rem;">
+                <h1>Check your inbox</h1>
+                <p>We've sent an activation link to{% if email %}<br><strong style="color: #111827;">{{ email }}</strong>{% else %} your email address{% endif %}.</p>
+            </div>
+
+            <p style="color: #6b7280; font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem;">
+                Please click the link in the email to activate your account. The link is secure and time-limited to 24 hours.
+            </p>
+
+            <a href="{% url 'login' %}" class="btn-signup" style="display: block; text-decoration: none; line-height: 3rem; text-align: center; margin-bottom: 1.25rem;">
+                Return to Login
+            </a>
+
+            <div class="footer-text" style="color: #888; font-size: 0.875rem;">
+                Didn't receive the email? Check your spam folder or 
+                <a href="{% url 'resend_verification' %}{% if email %}?email={{ email }}{% endif %}" style="color: rgb(5, 29, 243); text-decoration: none; font-weight: 600;">
+                    click here to resend
+                </a>.
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

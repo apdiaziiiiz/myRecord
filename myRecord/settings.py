@@ -144,6 +144,19 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 
+# Email Configuration (loaded from .env)
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 't')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'MyJournal <noreply@myjournal.com>')
+
+# Password Reset & Email Verification Token Validity (24 hours)
+PASSWORD_RESET_TIMEOUT = 86400
+
+
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # # Clear sessions whenever the server restarts by storing them in local memory (RAM) instead of the database
 # SESSION_ENGINE = "django.contrib.sessions.backends.cache"

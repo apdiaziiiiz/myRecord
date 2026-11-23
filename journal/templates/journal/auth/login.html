@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - MyJournal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    {%load static %}
-    <link rel="stylesheet" href="{%static 'journal/css/login.css'%}">
-
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'journal/css/login.css' %}">
 </head>
 <body>
 
@@ -24,24 +23,45 @@
                 <p>Enter your details to access your account.</p>
             </div>
 
+            {% if messages %}
+                {% for message in messages %}
+                <div style="padding: 0.85rem 1rem; margin-bottom: 1.25rem; border-radius: 8px; font-size: 0.9rem; {% if message.tags == 'success' %}background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;{% else %}background-color: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
             <form method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
-                {% if form.errors %}
-                <p style="color: #ef4444; margin-bottom: 1rem; text-align: center; font-weight: 500;">Invalid username or password.</p>
+                
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                    <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.85rem 1rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.875rem; line-height: 1.4;">
+                        {{ error }}
+                        {% if 'verified' in error or 'verification' in error %}
+                        <div style="margin-top: 0.5rem;">
+                            <a href="{% url 'resend_verification' %}" style="color: #1e3a8a; font-weight: 600; text-decoration: underline;">Click here to resend verification link &rarr;</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% elif form.errors %}
+                    <p style="color: #ef4444; margin-bottom: 1rem; text-align: center; font-weight: 500;">Invalid username or password.</p>
                 {% endif %}
-
 
                 <div class="input-group">
                     <div class="input-wrapper">
                         <div class="input-cover">Username</div>
-                        <input type="text" name="username" class="real-input" placeholder="Username" required>
+                        <input type="text" name="username" class="real-input" placeholder="Username" value="{{ form.username.value|default:'' }}" required autofocus>
                     </div>
+                    {% if form.username.errors %}
+                        <p style="color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.username.errors.0 }}</p>
+                    {% endif %}
                 </div>
 
                 <div class="input-group">
                     <div class="input-wrapper">
                         <div class="input-cover">Password</div>
-                        
                         <input
                             type="password"
                             id="passwordInput"
@@ -51,7 +71,6 @@
                             style="padding-right: 3rem;"
                             required
                         >
-                        
                         <button type="button" class="password-toggle" onclick="togglePassword()">
                             <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -61,18 +80,29 @@
                             </svg>
                         </button>
                     </div>
+                    {% if form.password.errors %}
+                        <p style="color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.password.errors.0 }}</p>
+                    {% endif %}
                 </div>
 
+                <div style="display: flex; justify-content: flex-end; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+                    <a href="{% url 'password_reset' %}" style="color: #6b7280; font-size: 0.875rem; text-decoration: none; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='#111827'" onmouseout="this.style.color='#6b7280'">
+                        Forgot Password?
+                    </a>
+                </div>
 
                 <button type="submit" class="btn-signup">Log in</button>
             </form>
 
-
-            <div class="footer-text" style="margin-top: 1.5rem; text-align: center; color: #888;">
-                Don't have an account? <a href="{% url 'signup' %}" style="color: rgb(5, 29, 243); text-decoration: none; font-weight: 500;">Sign up</a>
+            <div class="footer-text" style="margin-top: 1.5rem; text-align: center; color: #888; font-size: 0.9rem;">
+                Don't have an account? <a href="{% url 'signup' %}" style="color: rgb(5, 29, 243); text-decoration: none; font-weight: 600;">Sign up</a>
+            </div>
+            <div style="margin-top: 0.75rem; text-align: center; font-size: 0.825rem; color: #9ca3af;">
+                Need activation help? <a href="{% url 'resend_verification' %}" style="color: #4b5563; text-decoration: underline;">Resend verification email</a>
             </div>
         </div>
     </div>
+
 <script>
 function togglePassword() {
     const pwdInput = document.getElementById('passwordInput');

@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Sign Up - MyJournal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    {%load static %}
-    <link rel="stylesheet" href="{%static 'journal/css/login.css'%}">
-
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'journal/css/login.css' %}">
 </head>
 <body>
 
@@ -21,51 +20,101 @@
         <div class="form-container">
             <div class="header">
                 <h1>Create an account</h1>
-                <p>Enter your details to get started.</p>
+                <p>Enter your details to get started with MyJournal.</p>
             </div>
 
             <form method="POST" action="{% url 'signup' %}">
                 {% csrf_token %}
                 
                 {% if form.non_field_errors %}
-                <p style="color: #ef4444; margin-bottom: 1rem; text-align: center; font-weight: 500;">
-                    {{ form.non_field_errors.0 }}
-                </p>
+                    {% for error in form.non_field_errors %}
+                    <p style="color: #ef4444; margin-bottom: 1rem; text-align: center; font-weight: 500; font-size: 0.9rem;">
+                        {{ error }}
+                    </p>
+                    {% endfor %}
                 {% endif %}
 
-                {% for field in form %}
+                <!-- Username -->
                 <div class="input-group">
                     <div class="input-wrapper">
-                        <div class="input-cover">{{ field.label }}</div>
-                        {{ field }}
+                        <div class="input-cover">Username</div>
+                        <input type="text" name="username" class="real-input" placeholder="Username" value="{{ form.username.value|default:'' }}" required autofocus>
                     </div>
+                    {% if form.username.errors %}
+                        <p style="color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.username.errors.0 }}</p>
+                    {% endif %}
                 </div>
-                {% if field.errors %}
-                    <p style="color: #ef4444; font-size: 0.8rem; margin-top: -0.5rem; margin-bottom: 1rem;">{{ field.errors.0 }}</p>
-                {% endif %}
-                {% endfor %}
 
-                <button type="submit" class="btn-signup">Sign up</button>
+                <!-- Email -->
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <div class="input-cover">Email Address</div>
+                        <input type="email" name="email" class="real-input" placeholder="you@example.com" value="{{ form.email.value|default:'' }}" required>
+                    </div>
+                    {% if form.email.errors %}
+                        <p style="color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <div class="input-cover">Password</div>
+                        <input type="password" id="passwordInput" name="password" class="real-input" placeholder="••••••••" style="padding-right: 3rem;" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('passwordInput', 'eyeIcon1')">
+                            <svg id="eyeIcon1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                        <div style="color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem;">
+                            {% for error in form.password.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <div class="input-cover">Confirm Password</div>
+                        <input type="password" id="confirmPasswordInput" name="confirm_password" class="real-input" placeholder="••••••••" style="padding-right: 3rem;" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPasswordInput', 'eyeIcon2')">
+                            <svg id="eyeIcon2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    {% if form.confirm_password.errors %}
+                        <p style="color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem;">{{ form.confirm_password.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn-signup" style="margin-top: 0.5rem;">Create Account</button>
             </form>
 
             <div class="footer-text" style="margin-top: 1.5rem; text-align: center; color: #888;">
-                Already have an account? <a href="{% url 'login' %}" style="color: rgb(41, 2, 233); text-decoration: none; font-weight: 500;">Log in</a>
+                Already have an account? <a href="{% url 'login' %}" style="color: rgb(41, 2, 233); text-decoration: none; font-weight: 600;">Log in</a>
             </div>
         </div>
     </div>
     
     <script>
-        // Make the rendered form fields match the design
-        document.querySelectorAll('.input-wrapper').forEach(wrapper => {
-            const input = wrapper.querySelector('input');
-            const cover = wrapper.querySelector('.input-cover');
-            if (input) {
-                input.classList.add('real-input');
-                if (cover) {
-                    input.placeholder = cover.textContent.trim();
-                }
+        function togglePassword(inputId, iconId) {
+            const pwdInput = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(iconId);
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><line x1="3" y1="3" x2="21" y2="21"></line>';
+            } else {
+                pwdInput.type = 'password';
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
             }
-        });
+        }
     </script>
 </body>
 </html>
