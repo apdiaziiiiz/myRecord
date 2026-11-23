@@ -136,7 +136,6 @@ myRecord/
         └── topic/          # Topics list, detail, and edit screens
 ```
 
----
 
 ## 🔒 Security & Best Practices
 
