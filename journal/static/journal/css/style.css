@@ -1697,13 +1697,47 @@ body {
 
     /* Stats Grid */
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 1rem;
         margin-bottom: 1.5rem;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .stats-grid > * {
+        grid-column: 1 / -1 !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .stat-card {
         padding: 1.3rem;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    .stats-grid .card {
+        padding: 1.3rem;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    .stats-grid .chart-wrapper,
+    .stats-grid .card > div:last-child {
+        position: relative;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .stats-grid canvas,
+    #moodChart {
+        max-width: 100% !important;
+        width: 100% !important;
     }
 
     .stat-value {
