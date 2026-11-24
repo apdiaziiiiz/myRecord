@@ -398,8 +398,8 @@ class EntryAutosaveView(LoginRequiredMixin, View):
                     
             return JsonResponse({'status': 'success', 'id': entry.id})
         except Exception as e:
-            print(f"Autosave error: {str(e)}")
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+            error_msg = str(e) if settings.DEBUG else "An internal server error occurred."
+            return JsonResponse({'status': 'error', 'message': error_msg}, status=500)
 
 class TopicAutosaveView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
@@ -427,4 +427,5 @@ class TopicAutosaveView(LoginRequiredMixin, View):
                     
             return JsonResponse({'status': 'success', 'id': topic_id})
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+            error_msg = str(e) if settings.DEBUG else "An internal server error occurred."
+            return JsonResponse({'status': 'error', 'message': error_msg}, status=500)
